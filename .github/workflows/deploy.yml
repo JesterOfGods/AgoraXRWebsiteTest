@@ -31,6 +31,10 @@ jobs:
           SITE_HOST="https://${GITHUB_REPOSITORY%%/*}.github.io" \
           node build.js
       - uses: actions/configure-pages@v5
+        with:
+          # Enable Pages (and switch the source to GitHub Actions) via the API on first run,
+          # so no manual Settings → Pages change is needed.
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
