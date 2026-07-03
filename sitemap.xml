@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AgoraXR sitemap. NOTE: the site is currently a hash-router SPA, so only the
+     homepage is a real, crawlable URL. Once History-API routing + per-route
+     static HTML are in place (see the business-development report), add every
+     route below as its own <url> entry: /solutions/*, /platform/*, /services/*,
+     /trust, /about, /contact. Replace the host with your production domain. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.agoraxr.example/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

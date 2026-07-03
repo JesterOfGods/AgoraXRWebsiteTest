@@ -1,0 +1,1820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AgoraXR — Run XR at scale, for everyone</title>
+<meta name="description" content="Run XR at scale. AgoraXR makes your space XR-ready and configures every headset to be comfortable and accessible for every visitor. EU-based, EU-compliant." />
+<meta name="theme-color" content="#0A0A0F" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#FBFAFE" media="(prefers-color-scheme: light)" />
+<script>
+/* Set theme + performance profile before first paint (no flash of wrong theme). */
+(function(){
+  var d = document.documentElement;
+  try{
+    var saved = localStorage.getItem('axr-theme');
+    var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    d.setAttribute('data-theme', theme);
+  }catch(e){ d.setAttribute('data-theme','dark'); }
+  try{
+    var m = window.matchMedia;
+    var lowMem  = navigator.deviceMemory && navigator.deviceMemory <= 4;
+    var lowCPU  = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+    var saveData= navigator.connection && navigator.connection.saveData;
+    var reduce  = m && m('(prefers-reduced-motion: reduce)').matches;
+    var small   = m && m('(max-width: 760px)').matches;
+    if(lowMem || lowCPU || saveData || reduce || small){ d.classList.add('perf-lite'); }
+  }catch(e){}
+})();
+</script>
+<meta property="og:type" content="website" />
+<meta property="og:title" content="AgoraXR — Run XR at scale, for everyone" />
+<meta property="og:description" content="One system to deploy, run, and scale immersive content — comfortable and accessible for every visitor. EU-based, EU-compliant." />
+<meta property="og:image" content="assets/og-image.jpg" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230C1A20'/%3E%3Cpath d='M16 6 L25 26 L20.5 26 L16 15 L11.5 26 L7 26 Z' fill='%237C5CFF'/%3E%3Ccircle cx='16' cy='22.5' r='2.4' fill='%2322D3EE'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* AgoraXR — Electric two-thread system (theme-aware tokens):
+   aegean-named token = electric VIOLET (operations/trust)
+   gold-named token   = electric CYAN   (Attune/comfort/access)
+   Display: Bricolage Grotesque · Body: Inter · Utility: IBM Plex Mono
+   :root holds the DARK baseline; [data-theme="light"] overrides below. */
+:root{
+  color-scheme:dark;
+  --ink:#0A0A0F; --ink-2:#111019; --ink-3:#17151F; --line:#2A2740; --line-soft:#211F33;
+  --limestone:#F4F2FB; --limestone-2:#FFFFFF; --limestone-line:#E6E2F3;
+  --aegean:#8B7BFF; --aegean-deep:#7C5CFF; --aegean-ink:#6D28D9;
+  --gold:#34D3EE; --gold-deep:#0E7490; --gold-soft:#A7ECF5;
+  --paper:#ECEBF5; --paper-2:#ABA8C8; --paper-3:#75718F;
+  --ink-text:#17152A; --ink-text-2:#4C4869; --white:#fff;
+  --footer-bg:#070710; --motif:#221F33;
+  --glass:rgba(12,10,20,.62); --glass-scrolled:rgba(9,8,15,.86);
+  --elev:0 10px 34px -22px rgba(0,0,0,.75); --elev-hi:0 22px 60px -30px rgba(0,0,0,.85);
+  --grad-primary:linear-gradient(135deg,#8B7BFF,#6D4EF2);
+  --grad-cyan:linear-gradient(135deg,#34D3EE,#0EA5C4);
+  --grad-brand:linear-gradient(120deg,#8B7BFF 0%,#7C5CFF 45%,#22D3EE 100%);
+  --aurora-1:rgba(124,92,255,.30); --aurora-2:rgba(34,211,238,.20); --aurora-3:rgba(139,123,255,.16);
+  --f-cap:clamp(.72rem,.70rem + .10vw,.78rem); --f-sm:clamp(.86rem,.83rem + .14vw,.94rem);
+  --f-base:clamp(1rem,.96rem + .20vw,1.08rem); --f-lg:clamp(1.14rem,1.06rem + .34vw,1.32rem);
+  --f-h4:clamp(1.22rem,1.10rem + .5vw,1.5rem); --f-h3:clamp(1.5rem,1.30rem + .9vw,2.05rem);
+  --f-h2:clamp(1.95rem,1.55rem + 1.7vw,3rem); --f-h1:clamp(2.6rem,1.95rem + 3vw,4.6rem);
+  --r-sm:10px; --r:14px; --r-lg:20px; --r-xl:28px;
+  --pad-x:clamp(1.15rem,.6rem + 2.6vw,2.4rem); --maxw:1200px;
+  --shadow:0 1px 0 rgba(255,255,255,.03),0 18px 44px -24px rgba(0,0,0,.7);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:var(--f-base);line-height:1.62;font-weight:400;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+h1,h2,h3,h4{font-family:"Bricolage Grotesque",Inter,sans-serif;font-weight:700;line-height:1.05;letter-spacing:-.02em;margin:0;color:var(--paper)}
+h1{font-size:var(--f-h1);font-weight:800;letter-spacing:-.032em}
+h2{font-size:var(--f-h2);letter-spacing:-.028em}
+h3{font-size:var(--f-h3)} h4{font-size:var(--f-h4);letter-spacing:-.015em}
+p{margin:0 0 1rem} a{color:inherit;text-decoration:none}
+img,svg{max-width:100%;display:block} button{font-family:inherit;cursor:pointer}
+ul{margin:0;padding:0;list-style:none} strong{font-weight:600;color:var(--paper)}
+:focus{outline:none}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
+a:focus-visible,button:focus-visible{outline-offset:4px}
+.skip{position:fixed;top:-60px;left:12px;z-index:200;background:var(--gold);color:#06232A;padding:.6rem 1rem;border-radius:8px;font-weight:600;transition:top .2s}
+.skip:focus{top:12px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad-x)}
+.band{padding-block:clamp(3.6rem,2rem + 6vw,7rem)}
+.band--tight{padding-block:clamp(2.6rem,1.6rem + 3.5vw,4.2rem)}
+.band--lime{background:var(--limestone);color:var(--ink-text)}
+.band--lime h1,.band--lime h2,.band--lime h3,.band--lime h4,.band--lime strong{color:var(--ink-text)}
+.band--ink2{background:var(--ink-2)}
+.lede{font-size:var(--f-lg);color:var(--paper-2);max-width:60ch}
+.band--lime .lede{color:var(--ink-text-2)}
+.center{text-align:center}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:var(--f-cap);letter-spacing:.18em;text-transform:uppercase;color:var(--aegean);font-weight:500;display:inline-flex;align-items:center;gap:.55rem;margin-bottom:1rem}
+.eyebrow::before{content:"";width:1.6rem;height:1px;background:currentColor;opacity:.7}
+.eyebrow--gold{color:var(--gold)}
+.band--lime .eyebrow{color:var(--aegean-ink)}
+.band--lime .eyebrow--gold{color:var(--gold-deep)}
+.btn{display:inline-flex;align-items:center;gap:.5rem;font-weight:600;font-size:var(--f-sm);padding:.72rem 1.15rem;border-radius:999px;border:1px solid transparent;transition:all .18s var(--ease);white-space:nowrap}
+.btn svg{width:1.05em;height:1.05em}
+.btn--primary{background:var(--aegean-deep);color:#fff;border-color:var(--aegean-deep)}
+.btn--primary:hover{background:#6D4EF2;transform:translateY(-1px);box-shadow:0 10px 22px -12px rgba(124,92,255,.7)}
+.btn--gold{background:var(--gold);color:#06232A;border-color:var(--gold)}
+.btn--gold:hover{background:#38DCF0;transform:translateY(-1px);box-shadow:0 10px 22px -12px rgba(34,211,238,.7)}
+.btn--ghost{background:transparent;color:var(--paper);border-color:var(--line)}
+.btn--ghost:hover{border-color:var(--aegean);color:#fff;background:rgba(124,92,255,.08)}
+.band--lime .btn--ghost{color:var(--ink-text);border-color:var(--limestone-line)}
+.band--lime .btn--ghost:hover{border-color:var(--aegean-ink);background:rgba(14,90,102,.06)}
+.btn--lg{padding:.85rem 1.5rem;font-size:var(--f-base)}
+.btnrow{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center}
+.link-arrow{font-weight:600;color:var(--aegean);display:inline-flex;align-items:center;gap:.4rem;font-size:var(--f-sm)}
+.band--lime .link-arrow{color:var(--aegean-ink)}
+.link-arrow svg{width:1em;height:1em;transition:transform .18s var(--ease)}
+.link-arrow:hover svg{transform:translateX(4px)}
+.link-arrow--gold{color:var(--gold)} .band--lime .link-arrow--gold{color:var(--gold-deep)}
+.header{position:sticky;top:0;z-index:100;background:rgba(12,26,32,.72);backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid transparent;transition:border-color .25s,background .25s}
+.header.scrolled{border-bottom-color:var(--line);background:rgba(11,24,30,.9)}
+.nav{display:flex;align-items:center;gap:1.4rem;height:70px;max-width:1280px;margin:0 auto;padding-inline:var(--pad-x)}
+.brand{display:flex;align-items:center;gap:.6rem;font-family:"Bricolage Grotesque";font-weight:700;font-size:1.18rem;letter-spacing:-.02em;color:var(--paper)}
+.brand svg{width:30px;height:30px} .brand b{font-weight:800} .brand .xr{color:var(--aegean)}
+.nav-main{display:flex;align-items:center;gap:.35rem;margin-left:.6rem}
+.nav-item{position:relative}
+.nav-link{display:inline-flex;align-items:center;gap:.35rem;padding:.55rem .7rem;border-radius:8px;color:var(--paper-2);font-weight:500;font-size:var(--f-sm);background:none;border:none;transition:color .15s,background .15s}
+.nav-link:hover,.nav-link[aria-expanded="true"]{color:var(--paper);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--paper)}
+.nav-link .chev{width:.85em;height:.85em;transition:transform .2s}
+.nav-link[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.nav-spacer{flex:1} .nav-cta{display:flex;align-items:center;gap:.6rem}
+.dropdown{position:absolute;top:calc(100% + 10px);left:0;min-width:300px;background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:.6rem;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s var(--ease);z-index:120}
+.dropdown[data-open="true"]{opacity:1;visibility:visible;transform:translateY(0)}
+.dropdown--wide{min-width:520px;display:grid;grid-template-columns:1fr 1fr;gap:.25rem}
+.dd-link{display:block;padding:.6rem .75rem;border-radius:10px;transition:background .15s}
+.dd-link:hover{background:rgba(255,255,255,.045)}
+.dd-link .t{font-weight:600;font-size:var(--f-sm);color:var(--paper);display:flex;align-items:center;gap:.5rem}
+.dd-link .d{font-size:var(--f-cap);color:var(--paper-3);margin-top:.12rem;line-height:1.4}
+.dd-link .ic{color:var(--aegean);width:1.1em;height:1.1em;flex:none}
+.dd-link.gold .ic{color:var(--gold)}
+.dd-head{grid-column:1/-1;font-family:"IBM Plex Mono";font-size:var(--f-cap);letter-spacing:.14em;text-transform:uppercase;color:var(--paper-3);padding:.5rem .75rem .2rem}
+.burger{display:none;background:none;border:1px solid var(--line);border-radius:9px;width:42px;height:42px;color:var(--paper);align-items:center;justify-content:center}
+.mobile-nav{display:none}
+@media (max-width:960px){
+  .nav-main{display:none} .nav-cta .btn--ghost{display:none} .burger{display:inline-flex}
+  .mobile-nav{display:block;position:fixed;inset:70px 0 0;background:var(--ink);z-index:90;padding:1.2rem var(--pad-x) 3rem;overflow-y:auto;transform:translateY(-8px);opacity:0;visibility:hidden;transition:.2s}
+  .mobile-nav[data-open="true"]{opacity:1;visibility:visible;transform:none}
+  .mobile-nav details{border-bottom:1px solid var(--line)}
+  .mobile-nav summary{list-style:none;padding:1rem .2rem;font-size:var(--f-lg);font-weight:600;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .mobile-nav summary::-webkit-details-marker{display:none}
+  .mobile-nav summary .chev{width:1em;height:1em;transition:.2s;color:var(--paper-3)}
+  .mobile-nav details[open] summary .chev{transform:rotate(180deg)}
+  .mobile-nav .m-sub a{display:block;padding:.6rem .2rem .6rem 1rem;color:var(--paper-2);font-size:var(--f-sm)}
+  .mobile-nav .m-top{display:block;padding:1rem .2rem;font-size:var(--f-lg);font-weight:600;border-bottom:1px solid var(--line)}
+  .mobile-nav .btn{width:100%;justify-content:center;margin-top:1.4rem}
+}
+</style>
+<style>
+.hero{position:relative;overflow:hidden;padding-block:clamp(3rem,2rem + 5vw,5.5rem) clamp(3.5rem,2rem + 6vw,6rem)}
+.hero-motif{position:absolute;inset:0;z-index:0;opacity:.5;pointer-events:none}
+.hero-glow{position:absolute;z-index:0;width:min(760px,90vw);height:520px;right:-8%;top:-12%;background:radial-gradient(50% 50% at 50% 50%,rgba(124,92,255,.16),transparent 70%);filter:blur(10px);pointer-events:none}
+.hero-glow.g2{left:-14%;top:35%;background:radial-gradient(50% 50% at 50% 50%,rgba(34,211,238,.12),transparent 70%)}
+.hero .wrap{position:relative;z-index:1}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(1.5rem,1rem + 3vw,3.4rem);align-items:center}
+.hero h1{margin:.4rem 0 1.1rem}
+.hero .sub{font-size:var(--f-lg);color:var(--paper-2);max-width:44ch;margin-bottom:1.7rem}
+.trust-tags{margin-top:2.2rem;display:flex;flex-wrap:wrap;gap:.5rem}
+.tag{font-family:"IBM Plex Mono";font-size:var(--f-cap);letter-spacing:.08em;color:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:.32rem .7rem;display:inline-flex;align-items:center;gap:.45rem}
+.tag .dot{width:6px;height:6px;border-radius:50%;background:var(--aegean)}
+.tag.g .dot{background:var(--gold)}
+@media (max-width:860px){.hero-grid{grid-template-columns:1fr}}
+.ph{position:relative;border-radius:var(--r-lg);overflow:hidden;background:repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 12px,transparent 12px 24px),var(--ink-3);border:1px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--paper-3);min-height:180px;padding:1.5rem}
+.band--lime .ph{background:repeating-linear-gradient(135deg,rgba(0,0,0,.02) 0 12px,transparent 12px 24px),var(--limestone-2);border-color:var(--limestone-line);color:var(--ink-text-2)}
+.ph .ph-t{font-family:"IBM Plex Mono";font-size:var(--f-cap);letter-spacing:.12em;text-transform:uppercase;color:var(--aegean)}
+.band--lime .ph .ph-t{color:var(--aegean-ink)}
+.ph .ph-d{font-size:var(--f-cap);margin-top:.35rem;max-width:36ch}
+.ph--video{min-height:clamp(260px,42vh,460px);aspect-ratio:16/9}
+.ph--wide{min-height:clamp(260px,38vh,420px)}
+.ph-play{width:64px;height:64px;border-radius:50%;background:rgba(124,92,255,.16);border:1px solid var(--aegean);display:flex;align-items:center;justify-content:center;color:var(--aegean);margin-bottom:.8rem}
+.ph-cc{position:absolute;bottom:12px;left:12px;font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.1em;background:rgba(0,0,0,.5);color:#dfe;padding:.2rem .5rem;border-radius:5px}
+.grid{display:grid;gap:1.1rem}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--ink-3);border:1px solid var(--line);border-radius:var(--r-lg);padding:1.5rem;transition:transform .18s var(--ease),border-color .18s}
+.band--lime .card{background:var(--limestone-2);border-color:var(--limestone-line)}
+.card:hover{transform:translateY(-3px);border-color:var(--aegean)}
+.card .c-ic{width:44px;height:44px;border-radius:11px;background:rgba(124,92,255,.1);border:1px solid rgba(124,92,255,.25);display:flex;align-items:center;justify-content:center;color:var(--aegean);margin-bottom:1.1rem}
+.card.gold .c-ic{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.3);color:var(--gold)}
+.band--lime .card.gold .c-ic{color:var(--gold-deep)}
+.card.gold:hover{border-color:var(--gold)}
+.card h4{margin-bottom:.5rem} .card p{margin:0;color:var(--paper-2);font-size:var(--f-sm)}
+.band--lime .card p{color:var(--ink-text-2)}
+.c-num{font-family:"IBM Plex Mono";font-size:var(--f-cap);color:var(--paper-3);letter-spacing:.1em}
+.pillar{display:flex;flex-direction:column;height:100%}
+.pillar .p-name{font-family:"IBM Plex Mono";font-size:var(--f-cap);letter-spacing:.12em;text-transform:uppercase;color:var(--aegean);margin-bottom:.7rem}
+.pillar.feature{background:linear-gradient(180deg,rgba(34,211,238,.09),rgba(34,211,238,.02));border-color:rgba(34,211,238,.35)}
+.pillar.feature .p-name{color:var(--gold)}
+.band--lime .pillar.feature{background:linear-gradient(180deg,rgba(34,211,238,.14),rgba(34,211,238,.03));border-color:rgba(158,110,23,.3)}
+.band--lime .pillar.feature .p-name{color:var(--gold-deep)}
+.pillar .payoff{margin-top:auto;padding-top:1.1rem;border-top:1px solid var(--line);color:var(--paper);font-weight:500;font-size:var(--f-sm)}
+.band--lime .pillar .payoff{border-color:var(--limestone-line);color:var(--ink-text)}
+.pillar.feature .payoff{color:var(--gold-soft)} .band--lime .pillar.feature .payoff{color:var(--gold-deep)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,1rem + 3vw,3.5rem);align-items:center}
+.split--wide-left{grid-template-columns:1.15fr .85fr}
+@media (max-width:860px){.split,.split--wide-left{grid-template-columns:1fr}}
+.checklist li{display:flex;gap:.7rem;padding:.55rem 0;align-items:flex-start;font-size:var(--f-sm);color:var(--paper-2)}
+.band--lime .checklist li{color:var(--ink-text-2)}
+.checklist li svg{width:1.15em;height:1.15em;color:var(--aegean);flex:none;margin-top:.2em}
+.checklist.gold li svg{color:var(--gold)} .band--lime .checklist.gold li svg{color:var(--gold-deep)}
+.checklist li strong{color:var(--paper)} .band--lime .checklist li strong{color:var(--ink-text)}
+.statrow{display:flex;flex-wrap:wrap;gap:2.5rem;padding:1.4rem 1.6rem;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--ink-2)}
+.band--lime .statrow{background:var(--limestone-2);border-color:var(--limestone-line)}
+.stat .n{font-family:"Bricolage Grotesque";font-weight:800;font-size:clamp(1.8rem,1.4rem + 1.5vw,2.6rem);color:var(--gold);line-height:1}
+.band--lime .stat .n{color:var(--gold-deep)}
+.stat .l{font-family:"IBM Plex Mono";font-size:var(--f-cap);letter-spacing:.08em;text-transform:uppercase;color:var(--paper-3);margin-top:.4rem}
+.tile{position:relative;border:1px solid var(--line);border-radius:var(--r-lg);padding:1.4rem;background:var(--ink-3);transition:.18s var(--ease);display:flex;flex-direction:column;gap:.6rem;min-height:150px}
+.band--lime .tile{background:var(--limestone-2);border-color:var(--limestone-line)}
+.tile:hover{transform:translateY(-3px);border-color:var(--aegean);background:var(--ink-2)}
+.tile .t-ic{color:var(--aegean);width:26px;height:26px}
+.tile h4{font-size:var(--f-h4)} .tile p{margin:0;color:var(--paper-2);font-size:var(--f-sm)}
+.band--lime .tile p{color:var(--ink-text-2)}
+.tile .go{margin-top:auto;color:var(--aegean);font-size:var(--f-cap);font-family:"IBM Plex Mono";letter-spacing:.08em;display:flex;align-items:center;gap:.4rem}
+.steps{counter-reset:s;display:grid;gap:1.1rem}
+.step{display:grid;grid-template-columns:auto 1fr;gap:1.1rem;align-items:start;padding:1.3rem 1.4rem;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--ink-3)}
+.band--lime .step{background:var(--limestone-2);border-color:var(--limestone-line)}
+.step .s-n{counter-increment:s;font-family:"Bricolage Grotesque";font-weight:800;font-size:1.4rem;color:var(--gold);width:44px;height:44px;border-radius:11px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.28);display:flex;align-items:center;justify-content:center;flex:none}
+.step .s-n::before{content:counter(s,decimal-leading-zero)}
+.band--lime .step .s-n{color:var(--gold-deep)}
+.step h4{margin-bottom:.3rem} .step p{margin:0;color:var(--paper-2);font-size:var(--f-sm)}
+.band--lime .step p{color:var(--ink-text-2)}
+.attune-demo{border:1px solid var(--line);border-radius:var(--r-xl);overflow:hidden;background:var(--ink-2)}
+.attune-demo-grid{display:grid;grid-template-columns:1.15fr .85fr}
+@media (max-width:820px){.attune-demo-grid{grid-template-columns:1fr}}
+.ad-stage-wrap{padding:1.1rem;background:radial-gradient(120% 120% at 30% 20%,#0a1519,#060d10)}
+.ad-stagelabel{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--paper-3);margin:.1rem .2rem .7rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.ad-stagelabel .live{color:var(--gold);display:inline-flex;align-items:center;gap:.35rem}
+.ad-stagelabel .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 2.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,211,238,.5)}70%{box-shadow:0 0 0 8px rgba(34,211,238,0)}100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}}
+.ad-scene{position:relative;aspect-ratio:16/10;border-radius:14px;overflow:hidden;isolation:isolate;--scene-bright:1;--ui-scale:1;filter:brightness(var(--scene-bright))}
+.ad-sky{position:absolute;inset:0;background:linear-gradient(180deg,#1b4a63 0%,#2f7c94 42%,#7fb6b0 70%,#c8b98a 100%)}
+.ad-sun{position:absolute;width:70px;height:70px;border-radius:50%;right:16%;top:16%;background:radial-gradient(circle,#fff6dd,#ffd98a 60%,transparent 72%);animation:drift 14s ease-in-out infinite alternate}
+.ad-ground{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,#b9a877,#8a7a4f)}
+.ad-cols{position:absolute;bottom:34%;left:0;right:0;height:46%;display:flex;justify-content:space-around;align-items:flex-end;padding:0 8%}
+.ad-col{width:9%;height:100%;background:linear-gradient(90deg,#f0e7d0,#d8cbaa 45%,#b9ac89);border-radius:3px 3px 0 0;animation:drift 16s ease-in-out infinite alternate}
+.ad-figure{position:absolute;bottom:33%;left:14%;width:5%;height:22%;background:#2a3b44;border-radius:40% 40% 20% 20%;animation:walk 6s ease-in-out infinite alternate}
+.ad-figure.f2{animation-duration:7.5s}
+.ad-reticle{position:absolute;left:50%;top:50%;width:14px;height:14px;transform:translate(-50%,-50%);border:1.5px solid rgba(255,255,255,.8);border-radius:50%;opacity:0;transition:opacity .25s}
+.ad-scene.ref .ad-reticle{opacity:1}
+.ad-vignette{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(closest-side,transparent 44%,rgba(3,8,10,.55) 72%,rgba(3,8,10,.9) 100%)}
+.ad-scene.vig .ad-vignette{opacity:1}
+.ad-ui{position:absolute;left:5%;top:8%;font-family:"IBM Plex Mono";color:#eafcff;background:rgba(6,18,22,.42);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:.5rem .65rem;font-size:calc(11px * var(--ui-scale));letter-spacing:.04em;backdrop-filter:blur(2px);transition:.2s}
+.ad-ui .row{display:flex;align-items:center;gap:.5rem} .ad-ui .k{color:#9fdbe6}
+.ad-cap{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);max-width:82%;background:rgba(4,10,12,.66);color:#fff;padding:calc(.35rem * var(--ui-scale)) calc(.7rem * var(--ui-scale));border-radius:7px;font-size:calc(13px * var(--ui-scale));text-align:center;opacity:0;transition:.2s;line-height:1.3}
+.ad-cap .spk{color:var(--gold);font-weight:600}
+.ad-scene.cap .ad-cap{opacity:1}
+.ad-cb{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:0;transition:.25s}
+.ad-scene[data-cb="prot"] .ad-cb{opacity:.5;background:linear-gradient(90deg,rgba(80,120,255,.25),rgba(255,220,120,.25))}
+.ad-scene[data-cb="deut"] .ad-cb{opacity:.5;background:linear-gradient(90deg,rgba(120,90,255,.22),rgba(255,200,90,.28))}
+.ad-scene[data-cb="trit"] .ad-cb{opacity:.5;background:linear-gradient(90deg,rgba(255,120,120,.22),rgba(120,255,200,.22))}
+.ad-scene.hc .ad-ui{background:#000;border-color:#fff;color:#fff;font-weight:600}
+.ad-scene.hc .ad-ui .k{color:#ffd94a}
+.ad-scene.hc .ad-cap{background:#000;border:1px solid #fff;color:#fff}
+@keyframes drift{from{transform:translateX(-4px)}to{transform:translateX(6px)}}
+@keyframes walk{from{transform:translateX(0)}to{transform:translateX(240%)}}
+.ad-controls{padding:1.3rem 1.35rem;display:flex;flex-direction:column;gap:.1rem}
+.ad-controls h4{font-size:var(--f-h4);margin-bottom:.2rem}
+.ad-controls .hint{font-size:var(--f-cap);color:var(--paper-3);margin-bottom:1rem;font-family:"IBM Plex Mono";letter-spacing:.03em}
+.ad-ctl{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.62rem 0;border-bottom:1px solid var(--line-soft)}
+.ad-ctl:last-child{border-bottom:none}
+.ad-ctl label{font-size:var(--f-sm);font-weight:500;color:var(--paper);display:flex;align-items:center;gap:.55rem}
+.ad-ctl .ic{color:var(--gold);width:1.05em;height:1.05em}
+.toggle{position:relative;width:42px;height:24px;flex:none}
+.toggle input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2}
+.toggle .track{position:absolute;inset:0;background:var(--ink);border:1px solid var(--line);border-radius:999px;transition:.18s}
+.toggle .knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--paper-3);transition:.18s}
+.toggle input:checked ~ .track{background:rgba(34,211,238,.25);border-color:var(--gold)}
+.toggle input:checked ~ .track .knob{transform:translateX(18px);background:var(--gold)}
+.toggle input:focus-visible ~ .track{outline:3px solid var(--gold);outline-offset:2px}
+.ad-ctl input[type=range]{width:120px;accent-color:var(--gold)}
+.ad-ctl select{background:var(--ink);color:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.35rem .5rem;font-family:inherit;font-size:var(--f-sm)}
+.cat{border:1px solid var(--line);border-radius:var(--r-lg);padding:1.3rem;background:var(--ink-3);transition:.18s var(--ease);height:100%}
+.cat:hover{border-color:var(--gold);transform:translateY(-3px)}
+.cat .cat-h{display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem}
+.cat .cat-ic{width:40px;height:40px;border-radius:10px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.28);color:var(--gold);display:flex;align-items:center;justify-content:center;flex:none}
+.cat .cat-n{font-family:"IBM Plex Mono";font-size:var(--f-cap);color:var(--paper-3)}
+.cat h4{font-size:1.05rem;letter-spacing:-.01em} .cat p{margin:.5rem 0 0;font-size:var(--f-sm);color:var(--paper-2)}
+.cat.horizon{background:linear-gradient(180deg,rgba(34,211,238,.1),rgba(124,92,255,.04));border-color:rgba(34,211,238,.4)}
+.badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem}
+.badge{border:1px solid var(--line);border-radius:var(--r);padding:1.1rem 1.2rem;background:var(--ink-2)}
+.band--lime .badge{background:var(--limestone-2);border-color:var(--limestone-line)}
+.badge .b-t{font-weight:700;font-family:"Bricolage Grotesque";display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem}
+.badge .b-t svg{width:1.1em;height:1.1em;color:var(--aegean)}
+.badge p{margin:0;font-size:var(--f-cap);color:var(--paper-2)}
+.band--lime .badge p{color:var(--ink-text-2)}
+.legalnote{border-left:3px solid var(--aegean);background:rgba(124,92,255,.05);padding:1rem 1.2rem;border-radius:0 var(--r) var(--r) 0;font-size:var(--f-sm);color:var(--paper-2)}
+.band--lime .legalnote{background:rgba(14,90,102,.05);color:var(--ink-text-2)}
+.legalnote svg{width:1.1em;height:1.1em;vertical-align:-.15em;color:var(--aegean)}
+.formcard{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r-xl);padding:clamp(1.4rem,1rem + 2vw,2.2rem)}
+.band--lime .formcard{background:var(--limestone-2);border-color:var(--limestone-line)}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:var(--f-sm);font-weight:500;margin-bottom:.4rem;color:var(--paper)}
+.band--lime .field label{color:var(--ink-text)}
+.field .req{color:var(--gold)} .band--lime .field .req{color:var(--gold-deep)}
+.input,.textarea,.selectf{width:100%;background:var(--ink);color:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.7rem .8rem;font-family:inherit;font-size:var(--f-base);transition:border-color .15s}
+.band--lime .input,.band--lime .textarea,.band--lime .selectf{background:#fff;color:var(--ink-text);border-color:var(--limestone-line)}
+.input:focus,.textarea:focus,.selectf:focus{border-color:var(--aegean);outline:2px solid rgba(124,92,255,.3);outline-offset:0}
+.textarea{min-height:110px;resize:vertical}
+.field .err{font-size:var(--f-cap);color:#f0a35a;margin-top:.35rem;display:none}
+.field.invalid .err{display:block}
+.field.invalid .input,.field.invalid .textarea,.field.invalid .selectf{border-color:#e08a3a}
+.consent{display:flex;gap:.6rem;align-items:flex-start;font-size:var(--f-cap);color:var(--paper-3)}
+.consent input{margin-top:.25rem;accent-color:var(--aegean)}
+.form-success{display:none;padding:1rem 1.2rem;border:1px solid var(--aegean);background:rgba(124,92,255,.08);border-radius:var(--r);color:var(--paper);font-size:var(--f-sm)}
+.form-success.show{display:block}
+.form-success svg{color:var(--aegean);width:1.2em;height:1.2em;vertical-align:-.2em;margin-right:.4rem}
+.arch{width:100%;height:auto} .arch text{font-family:"IBM Plex Mono";fill:var(--paper-2)}
+.arch .box{fill:var(--ink-3);stroke:var(--line)} .arch .box-a{fill:rgba(124,92,255,.08);stroke:var(--aegean)}
+.arch .box-g{fill:rgba(34,211,238,.08);stroke:var(--gold)} .arch .lbl{fill:var(--paper);font-weight:600}
+.arch .cap{fill:var(--paper-3);font-size:11px} .arch .flow{stroke:var(--line);stroke-width:1.5;fill:none}
+.arch .flow-a{stroke:var(--aegean);stroke-width:1.5;fill:none;stroke-dasharray:4 4}
+.band--lime .arch text{fill:var(--ink-text-2)} .band--lime .arch .box{fill:#fff;stroke:var(--limestone-line)}
+.band--lime .arch .lbl{fill:var(--ink-text)} .band--lime .arch .flow{stroke:var(--limestone-line)}
+.code{background:#07110f;border:1px solid var(--line);border-radius:var(--r);padding:1.1rem 1.2rem;overflow-x:auto;font-family:"IBM Plex Mono";font-size:var(--f-sm);color:#cfe;line-height:1.7;white-space:pre}
+.code .c{color:#5b8f7f} .code .kw{color:var(--gold)} .code .fn{color:var(--aegean)} .code .str{color:#a9d9b0}
+.spec{width:100%;border-collapse:collapse;font-size:var(--f-sm)}
+.spec th,.spec td{text-align:left;padding:.7rem .8rem;border-bottom:1px solid var(--line)}
+.spec th{font-family:"IBM Plex Mono";font-size:var(--f-cap);letter-spacing:.08em;text-transform:uppercase;color:var(--paper-3);font-weight:500}
+.spec td{color:var(--paper-2)} .spec td:first-child{color:var(--paper);font-weight:500}
+.sec-head{max-width:64ch;margin-bottom:clamp(1.6rem,1rem + 2vw,2.8rem)}
+.sec-head.center{margin-inline:auto}
+.cta-band{background:linear-gradient(180deg,var(--ink-2),var(--ink));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.cta-inner{display:grid;grid-template-columns:1.2fr .8fr;gap:2rem;align-items:center}
+@media (max-width:760px){.cta-inner{grid-template-columns:1fr}}
+.footer{background:#081217;border-top:1px solid var(--line);padding-block:clamp(2.6rem,2rem + 3vw,4rem) 1.5rem}
+.footer-grid{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:2rem}
+@media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.footer-grid{grid-template-columns:1fr}}
+.footer .f-tag{font-family:"Bricolage Grotesque";font-weight:700;font-size:1.15rem;max-width:22ch;margin:.9rem 0 1.1rem;color:var(--paper)}
+.footer h5{font-family:"IBM Plex Mono";font-size:var(--f-cap);letter-spacing:.14em;text-transform:uppercase;color:var(--paper-3);margin:0 0 .9rem;font-weight:500}
+.footer a{display:block;color:var(--paper-2);font-size:var(--f-sm);padding:.28rem 0;transition:color .15s}
+.footer a:hover{color:var(--aegean)}
+.footer .newsletter{margin-top:1.1rem;display:flex;gap:.5rem;max-width:340px}
+.footer .newsletter input{flex:1;background:var(--ink);border:1px solid var(--line);color:var(--paper);border-radius:8px;padding:.55rem .7rem;font-family:inherit;font-size:var(--f-sm)}
+.foot-bar{border-top:1px solid var(--line);margin-top:2.4rem;padding-top:1.4rem;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-family:"IBM Plex Mono";font-size:var(--f-cap);color:var(--paper-3)}
+.foot-bar .eu{display:inline-flex;align-items:center;gap:.5rem} .foot-bar .eu svg{color:var(--aegean);width:16px;height:16px}
+.foot-bar a{color:var(--paper-2)} .foot-bar a:hover{color:var(--aegean)}
+.foot-links{display:flex;gap:1.2rem;flex-wrap:wrap}
+.cookie{position:fixed;left:12px;right:12px;bottom:12px;max-width:640px;margin:0 auto;z-index:150;background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:1.1rem 1.3rem;box-shadow:var(--shadow);display:flex;gap:1rem;align-items:center;flex-wrap:wrap;transform:translateY(140%);transition:transform .35s var(--ease)}
+.cookie[data-show="true"]{transform:none}
+.cookie p{margin:0;font-size:var(--f-sm);color:var(--paper-2);flex:1;min-width:220px}
+.cookie .btnrow{gap:.5rem}
+.totop{position:fixed;right:16px;bottom:16px;z-index:80;width:44px;height:44px;border-radius:50%;background:var(--ink-2);border:1px solid var(--line);color:var(--paper);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:.2s}
+.totop[data-show="true"]{opacity:1;visibility:visible}
+.totop:hover{border-color:var(--aegean);color:var(--aegean)}
+.divider{height:1px;background:var(--line);border:none;margin:0}
+.pill-note{display:inline-flex;align-items:center;gap:.5rem;font-family:"IBM Plex Mono";font-size:var(--f-cap);letter-spacing:.06em;color:var(--gold);border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.06);padding:.35rem .75rem;border-radius:999px}
+.band--lime .pill-note{color:var(--gold-deep)}
+[hidden]{display:none !important}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  .ad-sun,.ad-col,.ad-figure{animation:none !important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+<style>
+/* ============ Modern theme extension: light mode, motion, polish ============ */
+:root[data-theme="light"]{
+  color-scheme:light;
+  --ink:#FBFAFE; --ink-2:#F5F3FC; --ink-3:#FFFFFF; --line:#E7E3F3; --line-soft:#EFEDF8;
+  --limestone:#F0ECFB; --limestone-2:#FFFFFF; --limestone-line:#E3DEF3;
+  --aegean:#6D28D9; --aegean-deep:#7C3AED; --aegean-ink:#6D28D9;
+  --gold:#0E9BB8; --gold-deep:#0E7490; --gold-soft:#0891B2;
+  --paper:#1A1826; --paper-2:#55516E; --paper-3:#847FA0;
+  --ink-text:#1A1826; --ink-text-2:#55516E;
+  --footer-bg:#0E0C18; --motif:#E4DFF3;
+  --glass:rgba(255,255,255,.72); --glass-scrolled:rgba(255,255,255,.9);
+  --elev:0 1px 2px rgba(24,20,45,.05),0 14px 30px -20px rgba(80,60,160,.30);
+  --elev-hi:0 24px 52px -28px rgba(80,60,160,.38);
+  --grad-primary:linear-gradient(135deg,#7C3AED,#6D28D9);
+  --grad-cyan:linear-gradient(135deg,#06B6D4,#0891B2);
+  --grad-brand:linear-gradient(120deg,#7C3AED 0%,#6D28D9 45%,#0891B2 100%);
+  --aurora-1:rgba(124,58,237,.16); --aurora-2:rgba(8,145,178,.13); --aurora-3:rgba(139,92,246,.12);
+  --shadow:0 1px 2px rgba(24,20,45,.05),0 22px 48px -30px rgba(80,60,160,.35);
+}
+::selection{background:rgba(124,92,255,.28)}
+html{scrollbar-color:var(--aegean) transparent}
+body{background:var(--ink);transition:background .3s var(--ease),color .3s var(--ease)}
+
+/* Header glass + brand gradient */
+.header{background:var(--glass)}
+.header.scrolled{background:var(--glass-scrolled);border-bottom-color:var(--line)}
+.brand .xr{background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* Buttons → gradient, softer lift */
+.btn--primary{background:var(--grad-primary);border-color:transparent;box-shadow:0 8px 20px -12px rgba(124,92,255,.85)}
+.btn--primary:hover{background:var(--grad-primary);filter:brightness(1.07);transform:translateY(-1px);box-shadow:0 14px 26px -12px rgba(124,92,255,.7)}
+.btn--gold{background:var(--grad-cyan);color:#04252d;border-color:transparent;box-shadow:0 8px 20px -12px rgba(34,211,238,.75)}
+.btn--gold:hover{background:var(--grad-cyan);filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 14px 26px -12px rgba(34,211,238,.65)}
+
+/* Depth for surfaces */
+.card,.tile,.badge,.statrow,.step,.cat,.formcard,.attune-demo{box-shadow:var(--elev)}
+.card:hover,.tile:hover,.cat:hover{box-shadow:var(--elev-hi)}
+.code{background:#0C0A16;border-color:var(--line)}
+
+/* Theme toggle */
+.theme-toggle{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--paper-2);display:inline-flex;align-items:center;justify-content:center;transition:color .18s,border-color .18s,background .18s;flex:none}
+.theme-toggle:hover{border-color:var(--aegean);color:var(--aegean);background:rgba(124,92,255,.08)}
+.theme-toggle svg{width:20px;height:20px}
+.theme-toggle .sun{display:none}
+:root[data-theme="light"] .theme-toggle .moon{display:none}
+:root[data-theme="light"] .theme-toggle .sun{display:block}
+
+/* Footer always dark — re-scope tokens so children stay legible in both themes */
+.footer{background:var(--footer-bg);--paper:#ECEBF5;--paper-2:#B7B4D0;--paper-3:#8480A0;--line:rgba(255,255,255,.10);--ink:rgba(255,255,255,.05);--aegean:#A99BFF}
+
+/* Aurora hero glows (theme-aware, animated only when allowed) */
+.hero-glow{background:radial-gradient(50% 50% at 50% 50%,var(--aurora-1),transparent 70%);will-change:transform}
+.hero-glow.g2{background:radial-gradient(50% 50% at 50% 50%,var(--aurora-2),transparent 70%)}
+html:not(.perf-lite) .hero-glow{animation:floatA 20s var(--ease) infinite alternate}
+html:not(.perf-lite) .hero-glow.g2{animation:floatB 26s var(--ease) infinite alternate}
+@keyframes floatA{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-5%,7%,0) scale(1.14)}}
+@keyframes floatB{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(7%,-6%,0) scale(1.16)}}
+.hm-grid{stroke:var(--motif)} .hm-web{stroke:var(--aegean)} .hm-node{fill:var(--gold)}
+
+/* Low-end / mobile guard: keep it, but stop the expensive stuff */
+html.perf-lite .hero-glow{animation:none}
+html.perf-lite .ad-sun,html.perf-lite .ad-col,html.perf-lite .ad-figure{animation:none}
+html.perf-lite .hero-motif{opacity:.22}
+html.perf-lite .header,html.perf-lite .ad-ui,html.perf-lite .cookie{backdrop-filter:none;-webkit-backdrop-filter:none}
+html.perf-lite .header{background:var(--glass-scrolled)}
+@media (max-width:600px){.hero-motif{display:none}}
+
+/* Attune 3D canvas: sits above the CSS fallback backdrop, below the UI overlays */
+.ad-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;opacity:0;transition:opacity .6s var(--ease);display:block}
+.ad-scene.is3d .ad-canvas{opacity:1}
+.ad-scene.is3d .ad-sky,.ad-scene.is3d .ad-sun,.ad-scene.is3d .ad-cols,.ad-scene.is3d .ad-figure,.ad-scene.is3d .ad-ground{opacity:0;transition:opacity .5s var(--ease)}
+.ad-scene .ad-cb,.ad-scene .ad-vignette,.ad-scene .ad-reticle,.ad-scene .ad-ui,.ad-scene .ad-cap{z-index:2}
+.ad-scene .ad-loading{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;gap:.6rem;font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper-3);opacity:0;transition:opacity .3s;pointer-events:none}
+.ad-scene.loading3d .ad-loading{opacity:1}
+.ad-scene .ad-loading .spin{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--gold);animation:spin3d .8s linear infinite}
+@keyframes spin3d{to{transform:rotate(360deg)}}
+html.perf-lite .ad-scene .ad-loading .spin,@media (prefers-reduced-motion:reduce){.ad-scene .ad-loading .spin{animation:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">Skip to content</a>
+<header class="header" id="siteheader">
+  <nav class="nav" aria-label="Primary">
+    <a class="brand" href="#/" aria-label="AgoraXR home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#102530"/><path d="M16 6 L25 26 L20.5 26 L16 15 L11.5 26 L7 26 Z" fill="#7C5CFF"/><circle cx="16" cy="22.5" r="2.4" fill="#22D3EE"/></svg>
+      <span><b>Agora</b><span class="xr">XR</span></span>
+    </a>
+    <div class="nav-main" id="navMain"></div>
+    <div class="nav-spacer"></div>
+    <div class="nav-cta">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light or dark theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.4 6.4 0 0 0 10.5 10.5z"/></svg>
+      </button>
+      <a class="btn btn--primary" href="#/contact">Book a demo</a>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav" aria-label="Mobile navigation"></div>
+</header>
+
+<main id="app" tabindex="-1"></main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="#/" aria-label="AgoraXR home">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#102530"/><path d="M16 6 L25 26 L20.5 26 L16 15 L11.5 26 L7 26 Z" fill="#7C5CFF"/><circle cx="16" cy="22.5" r="2.4" fill="#22D3EE"/></svg>
+          <span><b>Agora</b><span class="xr">XR</span></span>
+        </a>
+        <p class="f-tag">Run XR at scale — for everyone.</p>
+        <form class="newsletter" data-form="newsletter" novalidate>
+          <label for="nl-email" style="position:absolute;left:-9999px">Your email</label>
+          <input id="nl-email" type="email" name="email" placeholder="Your email" required>
+          <button class="btn btn--primary" type="submit">Keep me posted</button>
+        </form>
+        <p class="form-success" data-success="newsletter" style="margin-top:.8rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Thanks — you are on the list.</p>
+      </div>
+      <div id="footSectors"></div>
+      <div id="footPlatform"></div>
+      <div>
+        <h5>Developers</h5>
+        <a href="#/developers">SDK</a><a href="#/developers">Documentation</a><a href="#/developers">Accessibility resources</a>
+        <h5 style="margin-top:1.4rem">Company</h5>
+        <a href="#/about">About</a><a href="#/trust">Trust</a><a href="#/page/careers">Careers</a><a href="#/contact">Contact</a>
+      </div>
+      <div>
+        <h5>Legal</h5>
+        <a href="#/page/privacy">Privacy</a><a href="#/trust">Accessibility statement</a><a href="#/page/terms">Terms</a><a href="#/page/cookies">Cookie settings</a><a href="#/page/gdpr">Data &amp; GDPR</a>
+      </div>
+    </div>
+    <div class="foot-bar">
+      <span class="eu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v.01M12 12l3 2"/></svg>&copy; <span id="year"></span> AgoraXR. Built and hosted in the EU.</span>
+      <span class="foot-links"><a href="#/trust">Accessibility statement</a><a href="#/contact">Report an accessibility barrier</a></span>
+    </div>
+  </div>
+</footer>
+
+<div class="cookie" id="cookie" role="dialog" aria-label="Cookie choices" aria-live="polite">
+  <p>We use only what we need to run this site. Choose what you are comfortable with.</p>
+  <div class="btnrow">
+    <button class="btn btn--ghost" id="cookieManage">Manage choices</button>
+    <button class="btn btn--primary" id="cookieAccept">Accept essential</button>
+  </div>
+</div>
+
+<button class="totop" id="totop" aria-label="Back to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+"use strict";
+/* AgoraXR application. Copy sourced from the approved Website Copy Deck v1.0.
+   Legal (marked) wording is reproduced per the deck and still needs counsel sign-off. */
+const I = (p, vb) => '<svg viewBox="'+(vb||'0 0 24 24')+'" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+const ICONS = {
+  deploy: I('<path d="M4 4h16v5H4zM4 15h16v5H4zM8 6.5h.01M8 17.5h.01"/><path d="M12 9v6"/>'),
+  control: I('<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/>'),
+  fleet: I('<rect x="3" y="4" width="7" height="6" rx="1.2"/><rect x="14" y="4" width="7" height="6" rx="1.2"/><rect x="3" y="14" width="7" height="6" rx="1.2"/><rect x="14" y="14" width="7" height="6" rx="1.2"/>'),
+  optimize: I('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
+  ticket: I('<path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 2 2 0 0 0 0-4z"/><path d="M13 6v2M13 16v2"/>'),
+  attune: I('<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18"/><path d="M8 15c2-1.5 6-1.5 8 0M16 9c-2 1.5-6 1.5-8 0"/>'),
+  vision: I('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
+  ear: I('<path d="M6 10a6 6 0 1 1 12 0c0 3-2 3.5-2 6a2.5 2.5 0 0 1-5 0"/><path d="M9 10a3 3 0 0 1 6 0"/>'),
+  motor: I('<circle cx="12" cy="5" r="2"/><path d="M12 7v6M8 10l4-1 4 1M9 21l3-8 3 8"/>'),
+  brain: I('<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8V15a3 3 0 0 0 4 2.8M15 4a3 3 0 0 1 3 3 3 3 0 0 1 1 5.8V15a3 3 0 0 1-4 2.8M12 4v14"/>'),
+  input: I('<rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 11h.01M10 11h.01M14 11h.01M7 14h10"/>'),
+  environment: I('<path d="M3 20h18M5 20V9l7-5 7 5v11M9 20v-5h6v5"/>'),
+  horizon: I('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'),
+  shield: I('<path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>'),
+  eu: I('<circle cx="12" cy="12" r="9"/><path d="M12 6l.7 1.6 1.7.2-1.3 1.2.4 1.7L12 10l-1.5.9.4-1.7L9.6 8l1.7-.2z"/>'),
+  check: I('<path d="M20 6 9 17l-5-5"/>'),
+  arrow: I('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+  play: I('<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>'),
+  chev: I('<path d="M6 9l6 6 6-6"/>'),
+  people: I('<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 6a3 3 0 0 1 0 6M21 20a6 6 0 0 0-4-5.6"/>'),
+  book: I('<path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h12"/>'),
+  cube: I('<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/>'),
+  spark: I('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>'),
+  chat: I('<path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/>'),
+  wifi: I('<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/>'),
+  building: I('<path d="M4 21V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v17M15 9h4a1 1 0 0 1 1 1v11M8 7h3M8 11h3M8 15h3"/>'),
+  cap: I('<path d="M22 9 12 5 2 9l10 4 10-4z"/><path d="M6 11v5c0 1 2.5 3 6 3s6-2 6-3v-5"/>'),
+  hospital: I('<rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M12 8v6M9 11h6"/>'),
+  ferris: I('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="1.5"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3M6.3 6.3l2 2M15.7 15.7l2 2M17.7 6.3l-2 2M8.3 15.7l-2 2"/>'),
+  compass: I('<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11z"/>'),
+  server: I('<rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/>'),
+  headset: I('<path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="2" y="13" width="5" height="7" rx="1.5"/><rect x="17" y="13" width="5" height="7" rx="1.5"/>'),
+  layers: I('<path d="M12 3 2 8.5 12 14l10-5.5z"/><path d="M2 13.5 12 19l10-5.5"/>'),
+  lock: I('<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>'),
+  handshake: I('<path d="m8 12 2 2 4-4 3 3 3-3M2 9l4-3 4 3M14 8l-2 2"/><path d="M6 6v6l3 3a2 2 0 0 0 3 0"/>'),
+  text: I('<path d="M4 7V5h16v2M9 5v14M7 19h4"/>'),
+  motion: I('<path d="M3 12h4l2-6 4 12 2-6h6"/>')
+};
+const ic = n => ICONS[n] || ICONS.spark;
+
+const SECTORS = [
+  { slug:"museums", nav:"Museums & Culture", icon:"cap",
+    eyebrow:"For museums & cultural institutions", h1:"Exhibit XR. Welcome everyone.",
+    hook:"Turnkey immersive exhibits — comfortable for every visitor.",
+    sub:"Give curators and artists a turnkey way to show immersive work — and give every visitor, first-timer or lifelong gallery-goer, a comfortable way to experience it.",
+    why:"An XR exhibit that makes visitors queasy, or that a wheelchair user or a low-vision guest can't experience, isn't an exhibit — it's a liability. AgoraXR runs the show and Attune makes it work for the whole audience.",
+    gets:["A turnkey way to deploy and rotate XR exhibits — no technician per headset.","Comfort settings that keep first-time visitors immersed instead of overwhelmed.","Access built in: captions, audio description, motor and vision accommodations, applied per visitor."],
+    attune:"In a gallery you never meet your audience twice. Attune lets each visitor carry their own comfort and access settings into whatever piece they pick up — so the queasy first-timer and the low-vision regular both get an exhibit that works for them.",
+    cta:"See a museum deployment" },
+  { slug:"education", nav:"Education", icon:"book",
+    eyebrow:"For schools & universities", h1:"An XR lab that's ready for every student.",
+    hook:"A managed immersive lab, configured for every learner.",
+    sub:"Stand up an immersive lab or bring XR into the classroom — managed, safe, and configured for every learner from day one.",
+    why:"Institutions carry accessibility duties, and a classroom is the least forgiving place to leave a student out. AgoraXR manages the fleet; Attune makes sure the content meets every student where they are.",
+    gets:["One dashboard to deploy lessons and control every headset in the room.","Comfort and safety settings that suit young and first-time users.","Per-student access — motor, vision, hearing, and cognitive accommodations — applied automatically."],
+    attune:"A class is a room full of different bodies and minds on shared hardware. Attune configures each headset to the student holding it, so a lesson lands for every learner without the teacher tuning devices one by one.",
+    cta:"See an education deployment" },
+  { slug:"training", nav:"Training & Job Centers", icon:"people",
+    eyebrow:"For training providers & job centers", h1:"Train more people, faster — and make it pay.",
+    hook:"Immersive simulation at real throughput, including everyone.",
+    sub:"Run immersive simulations at real throughput, with the operations layer to move learners through efficiently and the access layer to include every one of them.",
+    why:"Training only scales if throughput scales. AgoraXR optimizes the space and the flow so you train more people per day, and Attune keeps every learner — including those with disabilities — in the simulation.",
+    gets:["Space and session optimization for maximum learners per hour.","Repeatable, controllable simulations deployed across every station.","Inclusion by default, so no trainee is left on the sidelines."],
+    attune:"Job centers serve the widest possible range of people. Attune means a trainee's comfort and access needs are handled the moment they put a headset on — so the simulation works for everyone who walks in, not just the median user.",
+    cta:"See a training deployment" },
+  { slug:"enterprise", nav:"Enterprise", icon:"building",
+    eyebrow:"For enterprises", h1:"Deploy XR on your infrastructure, your standards.",
+    hook:"XR rollout with data that stays exactly where you say.",
+    sub:"Roll out immersive training, simulation, and collaboration — with data that stays exactly where you say, and full visibility if anything moves.",
+    why:"For enterprise buyers, control and data sovereignty come first. AgoraXR is EU-based and EU-hosted, runs on your infrastructure if you want, and lets nothing leave or enter without your permission.",
+    gets:["Deployment on your network — local servers, your rules, offline-capable.","Nothing leaves or enters without approval, with an auditable trail.","One operations hub for every headset across every site."],
+    attune:"A workforce is as varied as the public. Attune folds accessibility and comfort into every deployment by default, so inclusion isn't a separate program you have to run — it ships with the rollout.",
+    cta:"Talk to us about enterprise" },
+  { slug:"healthcare", nav:"Healthcare", icon:"hospital",
+    eyebrow:"For healthcare providers", h1:"Bring immersive care in — comfortably, accessibly, compliantly.",
+    hook:"Managed immersive training, therapy support, and simulation.",
+    sub:"Deploy immersive training, therapy, and simulation into care settings, with comfort and access handled for patients and staff alike.",
+    why:"In care, comfort and inclusion aren't nice-to-haves — they're the point. AgoraXR runs the deployment and Attune tunes every session to the patient in front of you.",
+    gets:["Managed deployment of training, therapy, and simulation content.","Comfort settings that keep vulnerable and first-time users at ease.","Access accommodations across motor, vision, hearing, and cognitive needs.","EU-based data handling suited to sensitive environments."],
+    attune:"Patients arrive with a wide span of needs and sensitivities. Attune calibrates each session — movement, vision, hearing, pacing — to the individual, so an experience stays gentle and usable for the person in the chair.",
+    legal:"Healthcare wording is limited to training, therapy support, and simulation. AgoraXR does not claim clinical efficacy, medical-device status, or regulatory clearance, and makes no claims of diagnosis or treatment outcomes. This wording is pending EU counsel review before publication.",
+    cta:"Talk to us about healthcare" },
+  { slug:"events", nav:"Events & LBE", icon:"ferris",
+    eyebrow:"For events & LBE venues", h1:"Turn any venue into an XR attraction.",
+    hook:"Ticketing, throughput, and content — handled.",
+    sub:"Ticketing, throughput, and content — handled. Light up a pop-up, a festival, or a permanent location and move crowds through smoothly.",
+    why:"Attractions live and die on throughput and reliability. AgoraXR handles ticketing, live control, and space optimization so the line keeps moving — and Attune keeps first-timers comfortable enough to come back.",
+    gets:["Ticketing and throughput optimization built in.","Live fleet control so every headset stays in the experience.","Comfort settings that make XR approachable for a general-public crowd."],
+    attune:"A queue at an attraction is a queue of first-timers. Attune keeps motion sickness and overwhelm down for a general-public crowd — the difference between one-and-done and coming back.",
+    cta:"See an LBE deployment" },
+  { slug:"travel", nav:"Travel & Tourism", icon:"compass",
+    eyebrow:"For travel & tourism operators", h1:"Immersive experiences anywhere — even with no internet.",
+    hook:"XR on location — from a single laptop or phone as the server.",
+    sub:"Deliver XR on location, on a boat, up a mountain, or in a remote site — from a single laptop or phone acting as the server.",
+    why:"Tourism happens where connectivity often doesn't. AgoraXR runs fully offline from local hardware, so the experience works wherever your visitors are — and stays comfortable for every one of them.",
+    gets:["Fully offline operation — a laptop or phone can be the server.","Managed content and live control, no connection required.","Comfort and access configured per visitor, on the spot."],
+    attune:"Your visitors are a cross-section of the travelling public. Attune configures comfort and access on the spot, on local hardware, so an experience up a mountain still works for the person who needs captions or gets motion sick.",
+    cta:"See a travel deployment" }
+];
+
+const PLATFORM = [
+  { slug:"agora-command", nav:"Agora Command", icon:"control", thread:"aegean", ddDesc:"operations hub",
+    eyebrow:"Agora Command", h1:"Run every headset from one screen.",
+    sub:"Deploy content, control every device live, manage your fleet, and optimize your space for throughput — all from a single operations hub.",
+    does:[["Deploy","Push experiences to every headset at once, or update them on the fly.","deploy"],
+      ["Control live","Start, stop, guide, and reset any session in the room from one dashboard.","control"],
+      ["Manage the fleet","See the status of every device, everywhere, at a glance.","fleet"],
+      ["Optimize the space","Turn utilization into a number you can improve, and move more people through.","optimize"],
+      ["Ticket and measure","Handle entry and see what's actually happening with built-in analytics.","ticket"]],
+    payoff:"One operator can run a room full of headsets. That's what makes XR affordable to run.",
+    media:"Live dashboard capture — many headsets, one controller." },
+  { slug:"attune", nav:"Attune", icon:"attune", thread:"gold", flagship:true, ddDesc:"accessibility & comfort" },
+  { slug:"content", nav:"Content", icon:"cube", thread:"aegean", ddDesc:"built & brokered",
+    eyebrow:"Content", h1:"Something to run on day one.",
+    sub:"We create immersive content — simulations, training, arts & culture, healthcare — and we broker it, connecting you to our network of XR creators for ready-made experiences.",
+    paths:[["We build it.","Custom simulations, training, cultural, and healthcare experiences, made to run on AgoraXR and inclusive by default.","cube"],
+      ["We source it.","AgoraXR Creators is a network of XR makers — so you can light up your space with proven content without commissioning from scratch.","people"]],
+    cta:"Talk to us about content" },
+  { slug:"consultancy", nav:"Consultancy", icon:"compass", thread:"aegean", ddDesc:"scope & scale",
+    eyebrow:"Consultancy", h1:"Get XR right the first time.",
+    sub:"Content creation, deployment, and research support for institutions, universities, researchers, and creators — from a team that does this daily.",
+    body:"Whether you're scoping a first pilot or scaling across sites, we help you plan the deployment, choose the content, and set up the operation so it actually works in your space.",
+    cta:"Talk to us" },
+  { slug:"workshops", nav:"Workshops & Training", icon:"cap", thread:"aegean", ddDesc:"own the capability",
+    eyebrow:"Workshops & training", h1:"Make XR part of how you already work.",
+    sub:"We teach your team to embed XR into the institution — so it becomes a capability you own, not a project you outsource forever.",
+    body:"Hands-on workshops for your staff: running the operations hub, deploying content, using Attune, and folding XR into your existing programs and workflows.",
+    cta:"Book a workshop" },
+  { slug:"hardware", nav:"Hardware", icon:"headset", thread:"aegean", ddDesc:"kit, if you want it",
+    eyebrow:"Hardware", h1:"The kit, if you want it.",
+    sub:"Headsets, networking, and local servers — supplied and set up, so you don't have to source and integrate a stack yourself.",
+    body:"AgoraXR is device-agnostic, so you're never locked in. But if you'd rather not assemble the hardware, we'll provide and configure it — including the local server that lets everything run offline.",
+    cta:"Talk to us about hardware" }
+];
+
+const PILLARS = [
+  { name:"Pillar 1 — One system to run it all", h:"XR-ready spaces, one system to run them.",
+    body:"Deploy content, control every headset live, and optimize your space for real throughput — all from a single operations hub.",
+    payoff:"More users per hour is utilization, revenue, and impact.", feature:false },
+  { name:"Pillar 2 — Comfortable for everyone", h:"Comfortable and accessible, by default.",
+    body:"Our accessibility & comfort layer spans nine categories of human difference — from vestibular comfort and motor access to vision, hearing, cognitive load, and emerging assistive tech — and auto-configures every headset to each user. It's built to keep expanding as the technology does.",
+    payoff:"First-timers stay in the experience instead of dropping out. People with disabilities are included by design.", feature:true },
+  { name:"Pillar 3 — Yours, under EU rules", h:"Built and hosted under EU rules.",
+    body:"EU-based and EU-compliant, end to end. For enterprise: nothing leaves — or enters — without your permission, with full visibility if it does.",
+    payoff:"Trust and data sovereignty, by default.", feature:false },
+  { name:"Pillar 4 — One partner, end to end", h:"One partner, from space to scale.",
+    body:"Space, system, content, hardware, consultancy, and training — from a single team.",
+    payoff:"No stitching together a stack of vendors.", feature:false }
+];
+
+const CATEGORIES = [
+  ["Locomotion & vestibular comfort","motion","Movement options (teleport, smooth, snap-turn, tunnel-vision vignetting, horizon lock) that prevent motion sickness and keep users grounded."],
+  ["Motor, physical & interaction access","motor","Seated, standing, and room-scale modes, full remapping, one-handed play, distance grabbing, and tremor smoothing, so any body can interact."],
+  ["Advanced input methods","input","Hand tracking, eye and gaze control, head-movement input, voice commands, and adaptive-controller support for users who can't use standard controllers."],
+  ["Vision calibration & hardware interfacing","vision","IPD, diopter, per-eye, and eye-dominance settings that tune the optics to each person's actual eyes."],
+  ["Visual & UI accommodations","text","UI scaling, high contrast, colorblindness filters, brightness, motion-blur and strobe toggles, and screen-reader support — legible and safe, including for photosensitivity."],
+  ["Auditory & communication accommodations","ear","Captions, spatialized subtitles, speaker identification, visual sound cues, independent channel volume, mono audio, and non-verbal communication tools."],
+  ["Cognitive, pacing & gameplay accommodations","brain","Assist modes, no-time-limit options, persistent waypoints, on-demand tutorials, pause-anywhere, and a calm reset for overwhelmed users."],
+  ["Environmental & spatial awareness","environment","Lying-down mode, instant passthrough, and customizable safety boundaries that bridge the physical and virtual safely."]
+];
+const $ = (s,r)=> (r||document).querySelector(s);
+const $$ = (s,r)=> [].slice.call((r||document).querySelectorAll(s));
+const chev = () => ic('chev').replace('<svg','<svg class="chev"');
+function eyebrowThread(text, gold){ return '<span class="eyebrow '+(gold?'eyebrow--gold':'')+'">'+text+'</span>'; }
+function ctaBtn(label, href, cls){ href=href||'#/contact'; cls=cls||'btn--primary'; var arrow=(cls.indexOf('primary')>-1||cls.indexOf('gold')>-1)?ic('arrow'):''; return '<a class="btn '+cls+'" href="'+href+'">'+label+' '+arrow+'</a>'; }
+
+function buildNav(){
+  var sectorsDD = SECTORS.map(function(s){ return '<a class="dd-link" href="#/sectors/'+s.slug+'"><span class="t"><span class="ic">'+ic(s.icon)+'</span>'+s.nav+'</span><span class="d">'+s.hook+'</span></a>'; }).join('');
+  var platOverview = '<a class="dd-link" href="#/platform"><span class="t"><span class="ic">'+ic('layers')+'</span>Overview</span><span class="d">Everything you need to run XR, in one system</span></a>';
+  var platDD = PLATFORM.map(function(p){ return '<a class="dd-link '+(p.thread==='gold'?'gold':'')+'" href="#/platform/'+p.slug+'"><span class="t"><span class="ic">'+ic(p.icon)+'</span>'+p.nav+'</span><span class="d">'+p.ddDesc+'</span></a>'; }).join('');
+  $('#navMain').innerHTML =
+    '<div class="nav-item" data-menu="sectors"><button class="nav-link" aria-expanded="false" aria-haspopup="true">Sectors '+chev()+'</button><div class="dropdown dropdown--wide" role="menu">'+sectorsDD+'</div></div>'+
+    '<div class="nav-item" data-menu="platform"><button class="nav-link" aria-expanded="false" aria-haspopup="true">Platform '+chev()+'</button><div class="dropdown dropdown--wide" role="menu"><div class="dd-head">The platform</div>'+platOverview+platDD+'</div></div>'+
+    '<a class="nav-link" href="#/developers">Developers</a><a class="nav-link" href="#/trust">Trust</a><a class="nav-link" href="#/about">About</a>';
+  var mSectors = SECTORS.map(function(s){ return '<a href="#/sectors/'+s.slug+'">'+s.nav+'</a>'; }).join('');
+  var mPlat = '<a href="#/platform">Overview</a>' + PLATFORM.map(function(p){ return '<a href="#/platform/'+p.slug+'">'+p.nav+'</a>'; }).join('');
+  $('#mobileNav').innerHTML =
+    '<details><summary>Sectors '+chev()+'</summary><div class="m-sub">'+mSectors+'</div></details>'+
+    '<details><summary>Platform '+chev()+'</summary><div class="m-sub">'+mPlat+'</div></details>'+
+    '<a class="m-top" href="#/developers">Developers</a><a class="m-top" href="#/trust">Trust</a><a class="m-top" href="#/about">About</a>'+
+    '<a class="btn btn--primary" href="#/contact">Book a demo</a>';
+  $('#footSectors').innerHTML = '<h5>Sectors</h5>' + SECTORS.map(function(s){ return '<a href="#/sectors/'+s.slug+'">'+s.nav+'</a>'; }).join('');
+  $('#footPlatform').innerHTML = '<h5>Platform</h5>' + PLATFORM.map(function(p){ return '<a href="#/platform/'+p.slug+'">'+p.nav+'</a>'; }).join('');
+}
+
+function attuneScene(id){
+  return '<div class="ad-scene ref" id="'+id+'" data-cb="none" data-3d="1" role="img" aria-label="Simulated XR view that reconfigures as the settings change">'+
+    '<div class="ad-sky"></div><div class="ad-sun"></div>'+
+    '<div class="ad-cols"><div class="ad-col"></div><div class="ad-col"></div><div class="ad-col"></div><div class="ad-col"></div><div class="ad-col"></div></div>'+
+    '<div class="ad-figure"></div><div class="ad-figure f2" style="left:auto;right:14%"></div>'+
+    '<div class="ad-ground"></div>'+
+    '<canvas class="ad-canvas" aria-hidden="true"></canvas>'+
+    '<div class="ad-loading" aria-hidden="true"><span class="spin"></span>Rendering scene</div>'+
+    '<div class="ad-cb"></div><div class="ad-vignette"></div><div class="ad-reticle"></div>'+
+    '<div class="ad-ui"><div class="row"><span class="k">GALLERY</span> Room 3 &middot; The Aegean</div><div class="row"><span class="k">NEXT</span> Colonnade walk</div></div>'+
+    '<div class="ad-cap"><span class="spk">Guide:</span> Ahead of you, the marble colonnade once framed the marketplace.</div>'+
+  '</div>';
+}
+function adCtl(label, icon, input){ return '<div class="ad-ctl"><label>'+ic(icon)+label+'</label>'+input+'</div>'; }
+function adToggle(sceneId, fx, checked){ return '<span class="toggle"><input type="checkbox" data-scene="'+sceneId+'" data-fx="'+fx+'" '+(checked?'checked':'')+' aria-label="'+fx+'"><span class="track"><span class="knob"></span></span></span>'; }
+function attuneControls(sceneId){
+  return '<div class="ad-controls"><h4>Try Attune</h4><p class="hint">// change the settings — the view adapts</p>'+
+    adCtl('Larger text & UI','text','<input type="range" min="1" max="1.6" step="0.05" value="1" data-scene="'+sceneId+'" data-fx="scale" aria-label="UI scale">')+
+    adCtl('Brightness','spark','<input type="range" min="0.55" max="1.25" step="0.05" value="1" data-scene="'+sceneId+'" data-fx="bright" aria-label="Brightness">')+
+    adCtl('Subtitles & captions','ear',adToggle(sceneId,'cap'))+
+    adCtl('High-contrast UI','vision',adToggle(sceneId,'hc'))+
+    adCtl('Colorblindness filter','vision','<select data-scene="'+sceneId+'" data-fx="cb" aria-label="Colorblindness filter"><option value="none">Off</option><option value="prot">Protanopia</option><option value="deut">Deuteranopia</option><option value="trit">Tritanopia</option></select>')+
+    adCtl('Comfort vignette','motion',adToggle(sceneId,'vig'))+
+    adCtl('Static reference point','compass',adToggle(sceneId,'ref',true))+
+  '</div>';
+}
+
+function archDiagram(){
+  return '<svg class="arch" viewBox="0 0 920 430" role="img" aria-label="AgoraXR stack: operator uses Agora Command; content built on the SDK with Attune embedded runs across XR devices; profiles and data live on device, a local server, or EU servers.">'+
+    '<text class="cap" x="20" y="26">OPERATOR</text>'+
+    '<rect class="box-a" x="20" y="38" width="180" height="70" rx="10"/><text class="lbl" x="38" y="72">Agora Command</text><text class="cap" x="38" y="92">operations hub &middot; command center</text>'+
+    '<path class="flow-a" d="M200 73 H300"/>'+
+    '<text class="cap" x="300" y="26">CONTENT LAYER</text>'+
+    '<rect class="box" x="300" y="38" width="260" height="150" rx="10"/><text class="lbl" x="320" y="70">AgoraXR SDK</text><text class="cap" x="320" y="90">multiplayer &middot; colocation &middot; sequencer</text>'+
+    '<rect class="box-g" x="320" y="104" width="220" height="64" rx="8"/><text class="lbl" x="336" y="132" style="fill:var(--gold)">Attune</text><text class="cap" x="336" y="152">accessibility & comfort &middot; 9 categories</text>'+
+    '<path class="flow" d="M430 188 V230"/>'+
+    '<text class="cap" x="300" y="256">XR DEVICES (device-agnostic)</text>'+
+    '<rect class="box" x="300" y="266" width="80" height="60" rx="8"/><rect class="box" x="392" y="266" width="80" height="60" rx="8"/><rect class="box" x="484" y="266" width="76" height="60" rx="8"/>'+
+    '<text class="cap" x="320" y="300">Headset</text><text class="cap" x="412" y="300">Headset</text><text class="cap" x="500" y="300">Headset</text>'+
+    '<path class="flow-a" d="M560 130 H660"/>'+
+    '<text class="cap" x="660" y="26">STORAGE — YOUR CHOICE</text>'+
+    '<rect class="box" x="660" y="38" width="240" height="52" rx="8"/><text class="lbl" x="676" y="70">On the user device</text>'+
+    '<rect class="box" x="660" y="100" width="240" height="52" rx="8"/><text class="lbl" x="676" y="132">Your local server (offline-capable)</text>'+
+    '<rect class="box" x="660" y="162" width="240" height="52" rx="8"/><text class="lbl" x="676" y="194">AgoraXR EU servers</text>'+
+    '<text class="cap" x="660" y="238">Nothing leaves or enters without permission.</text>'+
+  '</svg>';
+}
+const PAGES = {};
+
+function closingCTA(){
+  return `
+<section class="band cta-band">
+  <div class="wrap cta-inner">
+    <div>
+      ${eyebrowThread("See it for yourself")}
+      <h2>See what your space can do.</h2>
+      <p class="lede" style="margin-top:1rem">Book a walkthrough and we'll show you AgoraXR running real content, live control, and Attune configuring headsets on the fly.</p>
+    </div>
+    <div class="btnrow" style="justify-content:flex-end">
+      <a class="btn btn--primary btn--lg" href="#/contact">Book a demo ${ic('arrow')}</a>
+      <a class="btn btn--ghost btn--lg" href="#/trust">${ic('play')} Watch the 2-minute demo</a>
+    </div>
+  </div>
+</section>`;
+}
+
+PAGES.home = function(){
+  var motifDots = '';
+  for(var r=0;r<7;r++){ for(var c=0;c<11;c++){ var x=120+c*95, y=120+r*62; motifDots += '<rect x="'+(x-14)+'" y="'+(y-14)+'" width="28" height="28" rx="4" '+((r===3&&c===5)?'stroke="#22D3EE"':'')+'/>'; } }
+  var motifLines=''; for(var c2=0;c2<11;c2++){ motifLines += '<line x1="'+(120+c2*95)+'" y1="'+(120+3*62)+'" x2="600" y2="303"/>'; }
+  return `
+<section class="hero">
+  <div class="hero-glow"></div><div class="hero-glow g2"></div>
+  <svg class="hero-motif" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g class="hm-grid" stroke-width="1" fill="none">${motifDots}</g>
+    <g class="hm-web" stroke-width="1" opacity="0.4" fill="none">${motifLines}</g>
+    <circle class="hm-node" cx="600" cy="303" r="6"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="reveal in">
+        ${eyebrowThread("XR infrastructure for institutions")}
+        <h1>Run XR at scale — for&nbsp;everyone.</h1>
+        <p class="sub">AgoraXR makes your space XR-ready and gives you one system to deploy, run, and scale immersive experiences — comfortable and accessible for every visitor. EU-based, EU-compliant.</p>
+        <div class="btnrow">
+          <a class="btn btn--primary btn--lg" href="#/contact">Book a demo ${ic('arrow')}</a>
+          <a class="btn btn--ghost btn--lg" href="#/trust">${ic('play')} Watch the 2-minute demo</a>
+        </div>
+        <div class="trust-tags">
+          <span class="tag"><span class="dot"></span>EU-based &amp; EU-hosted</span>
+          <span class="tag g"><span class="dot"></span>9 categories &middot; 60+ settings</span>
+          <span class="tag"><span class="dot"></span>Works fully offline</span>
+        </div>
+      </div>
+      <div class="reveal in">
+        <div class="ph ph--video" role="img" aria-label="Placeholder for the hero demo film showing AgoraXR running live">
+          <div class="ph-play">${ic('play')}</div>
+          <span class="ph-t">Hero demo film</span>
+          <span class="ph-d">Replace with your muted autoplay loop. Captions on by default; provide a transcript.</span>
+          <span class="ph-cc">CC &middot; ON</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band band--tight band--ink2">
+  <div class="wrap center">
+    <p class="eyebrow" style="justify-content:center">Trusted by the places people already visit</p>
+    <div class="ph ph--wide" style="min-height:120px" role="img" aria-label="Placeholder for a cleared partner logo row">
+      <span class="ph-t">Partner logo row</span>
+      <span class="ph-d">Drop cleared logos here. If none are cleared yet, use the credibility line below instead. Never fabricate logos.</span>
+    </div>
+    <p style="margin-top:1rem;color:var(--paper-3);font-size:var(--f-sm)">In deployment across museums, classrooms, and training floors.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap split split--wide-left">
+    <div>${eyebrowThread("The real job")}<h2>XR is easy to demo. It's hard to run.</h2></div>
+    <div><p class="lede">Most institutions can put a headset on one person. Running it for hundreds — deploying content, controlling every device, keeping first-timers comfortable, including every visitor, and doing it all without a technician per headset — is the real job. That's the job AgoraXR does.</p></div>
+  </div>
+</section>
+
+<section class="band band--lime">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Why AgoraXR")}<h2>One platform. Four things it gets right.</h2></div>
+    <div class="grid g2">
+      ${PILLARS.map(function(p){ return '<article class="card pillar '+(p.feature?'feature':'')+' reveal"><div class="p-name">'+p.name+'</div><h4>'+p.h+'</h4><p style="margin-top:.5rem">'+p.body+'</p><div class="payoff">&rarr; '+p.payoff+'</div></article>'; }).join('')}
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head" style="max-width:70ch">
+      ${eyebrowThread("Meet Attune", true)}
+      <h2>Every user is different. Every headset should be too.</h2>
+      <p class="lede" style="margin-top:1rem">Attune is our accessibility &amp; comfort layer. A visitor sets their comfort and access needs once — movement, vision, hearing, motor, cognitive, and more — and Attune configures whatever headset they pick up, across whatever experience you're running. Nine categories. 60+ settings. Configured once, applied everywhere, and always expanding.</p>
+    </div>
+    <div class="attune-demo reveal">
+      <div class="attune-demo-grid">
+        <div class="ad-stage-wrap">
+          <div class="ad-stagelabel"><span class="live">live preview</span> &middot; one profile, any headset</div>
+          ${attuneScene('homeScene')}
+        </div>
+        ${attuneControls('homeScene')}
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:1.6rem">
+      <div class="card gold"><div class="c-ic">${ic('people')}</div><h4>For first-timers</h4><p>Less nausea, less overwhelm, more people who finish the experience instead of taking the headset off.</p></div>
+      <div class="card gold"><div class="c-ic">${ic('handshake')}</div><h4>For inclusion</h4><p>People with disabilities are designed in from the start — not retrofitted, not left out.</p></div>
+    </div>
+    <div class="btnrow" style="margin-top:1.6rem">
+      <a class="btn btn--gold" href="#/platform/attune">How Attune works ${ic('arrow')}</a>
+      <a class="btn btn--ghost" href="#/contact">Get the accessibility spec sheet</a>
+    </div>
+  </div>
+</section>
+
+<section class="band band--ink2">
+  <div class="wrap split">
+    <div>
+      ${eyebrowThread("Throughput = ROI")}
+      <h2>The number that pays for XR: people per hour.</h2>
+      <p class="lede" style="margin-top:1rem">AgoraXR optimizes your physical space and your operation — not just your content — so more visitors move through in the same day. Utilization, revenue, and impact, from the space you already have.</p>
+    </div>
+    <div>
+      <div class="statrow" style="flex-direction:column;gap:1.2rem;align-items:flex-start">
+        <div class="ph" style="min-height:150px;width:100%" role="img" aria-label="Placeholder for a verified throughput statistic">
+          <span class="ph-t">Throughput stat</span>
+          <span class="ph-d">e.g. "X% more visitors per hour." Fill with real evidence only — never invented.</span>
+        </div>
+        <div class="stat"><div class="n">9 &middot; 60+</div><div class="l">Categories &middot; settings &middot; always expanding</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Front doors")}<h2>Built for the places people walk into.</h2></div>
+    <div class="grid g3">
+      ${SECTORS.map(function(s){ return '<a class="tile reveal" href="#/sectors/'+s.slug+'"><span class="t-ic">'+ic(s.icon)+'</span><h4>'+s.nav+'</h4><p>'+s.hook+'</p><span class="go">Explore '+ic('arrow')+'</span></a>'; }).join('')}
+    </div>
+  </div>
+</section>
+
+<section class="band band--lime">
+  <div class="wrap split">
+    <div>
+      ${eyebrowThread("Data sovereignty")}
+      <h2>Yours, and it stays yours.</h2>
+      <p class="lede" style="margin-top:1rem">AgoraXR is EU-based and EU-hosted, end to end. Profiles and data can live on the user's device, your local server, or our EU servers — your call. For enterprise, nothing leaves or enters without your permission, with full visibility if it does.</p>
+      <div class="btnrow" style="margin-top:1.4rem">${ctaBtn("How we handle data & compliance","#/trust","btn--ghost")}</div>
+    </div>
+    <div class="grid" style="gap:.8rem">
+      <div class="badge"><div class="b-t">${ic('eu')}EU-based &amp; EU-hosted</div><p>Infrastructure and hosting inside the EU.</p></div>
+      <div class="badge"><div class="b-t">${ic('lock')}GDPR by design</div><p>EU data protection, built in from the start.</p></div>
+      <div class="badge"><div class="b-t">${ic('wifi')}Offline by design</div><p>Runs with no connection at all when you need it to.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap center" style="max-width:70ch;margin-inline:auto">
+    ${eyebrowThread("Full stack, one team")}
+    <h2>One team, from empty room to full house.</h2>
+    <p class="lede" style="margin:1rem auto 0">Space, system, content, hardware, consultancy, and training — from a single partner. No integrating five vendors to light up one experience.</p>
+  </div>
+</section>
+
+<section class="band band--ink2">
+  <div class="wrap split split--wide-left">
+    <div>
+      ${eyebrowThread("Building the content")}
+      <h2>Ship XR that's deployment-ready and inclusive from line one.</h2>
+      <p class="lede" style="margin-top:1rem">The AgoraXR SDK gives developers multiplayer colocation, state-machine and sequencer tools, analytics, and one-line integration of the full Attune layer — device-agnostic, local or online.</p>
+      <div class="btnrow" style="margin-top:1.4rem"><a class="btn btn--primary" href="#/developers">Explore the SDK ${ic('arrow')}</a></div>
+    </div>
+    <div class="code" aria-label="Code example"><span class="c">// add the full accessibility &amp; comfort layer</span>
+<span class="kw">using</span> AgoraXR.Attune;
+
+Attune.<span class="fn">Apply</span>(user.profile);
+<span class="c">// nine categories, configured — in one line</span></div>
+  </div>
+</section>
+
+${closingCTA()}
+`;
+};
+PAGES.sector = function(slug){
+  var s = SECTORS.filter(function(x){return x.slug===slug;})[0];
+  if(!s) return PAGES.notfound();
+  var getsCols = s.gets.length>3 ? '2' : '3';
+  return `
+  <section class="band hero" style="padding-bottom:2rem">
+    <div class="hero-glow"></div>
+    <div class="wrap">
+      ${eyebrowThread(s.eyebrow)}
+      <h1 style="max-width:16ch">${s.h1}</h1>
+      <p class="lede" style="margin-top:1.2rem;font-size:var(--f-lg)">${s.sub}</p>
+      <div class="btnrow" style="margin-top:1.6rem">
+        <a class="btn btn--primary btn--lg" href="#/contact">${s.cta} ${ic('arrow')}</a>
+        <a class="btn btn--ghost btn--lg" href="#/platform/attune">See how Attune fits</a>
+      </div>
+    </div>
+  </section>
+  <section class="band band--lime band--tight">
+    <div class="wrap split split--wide-left">
+      <div>${eyebrowThread("Why it matters here")}<h3>The real problem</h3></div>
+      <div><p class="lede">${s.why}</p></div>
+    </div>
+  </section>
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head">${eyebrowThread("What you get")}<h2>Outcomes, weighted to your priorities.</h2></div>
+      <div class="grid g${getsCols}">
+        ${s.gets.map(function(g,i){ return '<div class="card"><div class="c-num">0'+(i+1)+'</div><p style="margin-top:.7rem;color:var(--paper);font-weight:500;font-size:var(--f-base)">'+g+'</p></div>'; }).join('')}
+      </div>
+    </div>
+  </section>
+  <section class="band band--ink2">
+    <div class="wrap split">
+      <div>
+        ${eyebrowThread("Attune in this context", true)}
+        <h2>Comfort for newcomers. Inclusion for everyone.</h2>
+        <p class="lede" style="margin-top:1rem">${s.attune}</p>
+        <div class="btnrow" style="margin-top:1.3rem"><a class="btn btn--gold" href="#/platform/attune">Explore Attune ${ic('arrow')}</a></div>
+      </div>
+      <div>
+        <div class="ad-stage-wrap" style="border:1px solid var(--line);border-radius:var(--r-lg)">
+          <div class="ad-stagelabel"><span class="live">live preview</span></div>
+          ${attuneScene('scene_'+slug)}
+          <p style="font-size:var(--f-cap);color:var(--paper-3);font-family:'IBM Plex Mono';margin:.7rem .2rem 0">// full interactive on the Attune page</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head">${eyebrowThread("Proof")}<h2>Proof, for this sector.</h2></div>
+      <div class="ph ph--wide" role="img" aria-label="Placeholder for a ${s.nav} case study or pilot">
+        <span class="ph-t">${s.nav} case study</span>
+        <span class="ph-d">Drop one real deployment or pilot here. Real evidence only — no invented stats or logos.</span>
+      </div>
+    </div>
+  </section>
+  ${s.legal ? '<section class="band band--lime band--tight"><div class="wrap"><div class="legalnote">'+ic('shield')+' <strong style="color:inherit">Legal note (healthcare).</strong> '+s.legal+'</div></div></section>' : ''}
+  ${closingCTA()}
+  `;
+};
+
+PAGES.platform = function(){
+  return `
+<section class="band hero" style="padding-bottom:2rem">
+  <div class="hero-glow"></div>
+  <div class="wrap">
+    ${eyebrowThread("The platform")}
+    <h1 style="max-width:18ch">Everything you need to run XR — in one system.</h1>
+    <p class="lede" style="margin-top:1.2rem;font-size:var(--f-lg);max-width:64ch">AgoraXR is a full stack for institutional XR: an operations hub to run it, an accessibility &amp; comfort layer to make it work for everyone, content to fill it, and the people to help you stand it up.</p>
+    <p class="lede" style="margin-top:.8rem;max-width:64ch">Most XR "platforms" hand you a headset and a demo. AgoraXR hands you the whole operation — deployment, live control, throughput, inclusion, content, and support — from one team, under EU rules.</p>
+  </div>
+</section>
+<section class="band band--lime band--tight">
+  <div class="wrap">
+    <div class="sec-head center">${eyebrowThread("How it fits together")}<h2>The AgoraXR stack</h2></div>
+    ${archDiagram()}
+  </div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="grid g3">
+      ${PLATFORM.map(function(p){
+        var gold = p.thread==='gold';
+        var desc = p.flagship ? "Measures each user and auto-configures every headset — nine categories of comfort and access, applied at scale." : (p.sub||'');
+        return '<a class="card '+(gold?'gold':'')+' reveal" href="#/platform/'+p.slug+'" style="display:flex;flex-direction:column"><div class="c-ic">'+ic(p.icon)+'</div><h4>'+p.nav+'</h4><p style="margin-top:.5rem">'+desc+'</p><span class="link-arrow '+(gold?'link-arrow--gold':'')+'" style="margin-top:1rem">Learn more '+ic('arrow')+'</span></a>';
+      }).join('')}
+    </div>
+  </div>
+</section>
+${closingCTA()}
+`;
+};
+
+PAGES.platformItem = function(slug){
+  if(slug==='attune') return PAGES.attune();
+  var p = PLATFORM.filter(function(x){return x.slug===slug;})[0];
+  if(!p) return PAGES.notfound();
+  var mid = '';
+  if(p.does){
+    mid = '<section class="band"><div class="wrap"><div class="sec-head">'+eyebrowThread("What it does")+'<h2>Run the room from one place.</h2></div><div class="grid g2">'+
+      p.does.map(function(d){ return '<div class="card"><div class="c-ic">'+ic(d[2])+'</div><h4>'+d[0]+'</h4><p style="margin-top:.4rem">'+d[1]+'</p></div>'; }).join('')+
+      '</div><div class="statrow" style="margin-top:1.6rem"><div class="stat" style="flex:1"><div class="l" style="margin:0;color:var(--gold)">&rarr; '+p.payoff+'</div></div></div>'+
+      '<div class="ph ph--wide" style="margin-top:1.6rem" role="img" aria-label="Placeholder for a live dashboard capture"><span class="ph-t">Live dashboard capture</span><span class="ph-d">'+p.media+'</span></div></div></section>';
+  } else if(p.paths){
+    mid = '<section class="band"><div class="wrap"><div class="sec-head">'+eyebrowThread("Two paths")+'<h2>We build it, or we source it.</h2></div><div class="grid g2">'+
+      p.paths.map(function(d){ return '<div class="card"><div class="c-ic">'+ic(d[2])+'</div><h4>'+d[0]+'</h4><p style="margin-top:.4rem">'+d[1]+'</p></div>'; }).join('')+'</div></div></section>';
+  } else if(p.body){
+    mid = '<section class="band"><div class="wrap" style="max-width:70ch"><p class="lede">'+p.body+'</p></div></section>';
+  }
+  return `
+  <section class="band hero" style="padding-bottom:2rem">
+    <div class="hero-glow"></div>
+    <div class="wrap">
+      ${eyebrowThread(p.eyebrow)}
+      <h1 style="max-width:18ch">${p.h1}</h1>
+      <p class="lede" style="margin-top:1.2rem;font-size:var(--f-lg);max-width:60ch">${p.sub}</p>
+      <div class="btnrow" style="margin-top:1.6rem"><a class="btn btn--primary btn--lg" href="#/contact">${p.cta||'Book a demo'} ${ic('arrow')}</a></div>
+    </div>
+  </section>
+  ${mid}
+  ${closingCTA()}
+  `;
+};
+PAGES.attune = function(){
+  return `
+<section class="band hero" style="padding-bottom:2rem">
+  <div class="hero-glow g2" style="right:auto;left:-10%;top:-10%;background:radial-gradient(50% 50% at 50% 50%,rgba(34,211,238,.18),transparent 70%)"></div>
+  <div class="wrap">
+    ${eyebrowThread("Attune · the accessibility & comfort layer", true)}
+    <h1 style="max-width:16ch">Configured once. Comfortable for everyone.</h1>
+    <p class="lede" style="margin-top:1.2rem;font-size:var(--f-lg);max-width:60ch">Attune measures each user's comfort and access needs and auto-configures whatever headset they pick up, across any experience you run. It's the difference between XR that works for some people and XR that works for everyone.</p>
+    <div class="pill-note" style="margin-top:1.4rem">9 categories &middot; 60+ settings &middot; configured once &middot; applied to any content &middot; always expanding</div>
+  </div>
+</section>
+
+<section class="band band--tight">
+  <div class="wrap">
+    <div class="attune-demo">
+      <div class="attune-demo-grid">
+        <div class="ad-stage-wrap">
+          <div class="ad-stagelabel"><span class="live">live preview</span> &middot; one profile, any headset, any experience</div>
+          ${attuneScene('attuneScene')}
+        </div>
+        ${attuneControls('attuneScene')}
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--paper-3);font-size:var(--f-sm);margin-top:1rem">An illustration of the idea — in a real headset these settings tune optics, audio, motion, and UI per user.</p>
+  </div>
+</section>
+
+<section class="band band--lime">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("How it works")}<h2>Set it once. It travels. Every headset adapts.</h2></div>
+    <div class="steps g3" style="grid-template-columns:repeat(3,1fr)">
+      <div class="step"><div class="s-n"></div><div><h4>Set it once.</h4><p>A user chooses their comfort and access needs — movement, vision, hearing, motor, cognitive, and more. It takes minutes, and it's theirs.</p></div></div>
+      <div class="step"><div class="s-n"></div><div><h4>It travels.</h4><p>The profile lives where you choose — on the user's device, your local server, or our EU servers.</p></div></div>
+      <div class="step"><div class="s-n"></div><div><h4>Every headset adapts.</h4><p>Pick up any device, launch any AgoraXR experience, and it's already configured to the person wearing it.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("What it covers", true)}<h2>Nine categories of human difference.</h2></div>
+    <div class="grid g3">
+      ${CATEGORIES.map(function(c,i){ var n=(i+1)<10?('0'+(i+1)):(''+(i+1)); return '<article class="cat reveal"><div class="cat-h"><span class="cat-ic">'+ic(c[1])+'</span><div><div class="cat-n">CATEGORY '+n+'</div></div></div><h4>'+c[0]+'</h4><p>'+c[2]+'</p></article>'; }).join('')}
+      <article class="cat horizon reveal">
+        <div class="cat-h"><span class="cat-ic">${ic('horizon')}</span><div><div class="cat-n">CATEGORY 09 &middot; FORWARD TRACK</div></div></div>
+        <h4>Attune Horizon — next-gen &amp; experimental</h4>
+        <p>An active track for emerging assistive tech (brain-computer interfaces, haptic "vision substitutes," thermal haptics, real-time AI scene description) that keeps closing the remaining gaps.</p>
+      </article>
+    </div>
+    <div class="legalnote" style="margin-top:1.6rem;border-left-color:var(--gold);background:rgba(34,211,238,.05)">
+      <strong style="color:inherit">Nine categories. 60+ individual settings.</strong> Configured once, applied to any content — and always expanding. As XR hardware and assistive technology mature, new capabilities slot in, and Attune Horizon exists specifically to absorb what's next.
+    </div>
+  </div>
+</section>
+
+<section class="band band--ink2">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Two things it fixes at once")}<h2>Comfort and access, from one layer.</h2></div>
+    <div class="grid g2">
+      <div class="card gold"><div class="c-ic">${ic('people')}</div><h4>Comfort &rarr; fewer drop-offs</h4><p>First-timers on shared headsets are where XR loses people. Attune keeps them comfortable and in the experience — which is also throughput.</p></div>
+      <div class="card gold"><div class="c-ic">${ic('handshake')}</div><h4>Access &rarr; real inclusion</h4><p>People with disabilities are configured in from the start, across every experience, without each developer having to solve it alone.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Standards & credibility")}<h2>Designed around the benchmark for accessible XR.</h2></div>
+    <div class="legalnote">
+      Attune is designed around the <strong>W3C XR Accessibility User Requirements (XAUR)</strong> — the benchmark for accessible XR — and aligned to <strong>EN 301 549</strong> and <strong>WCAG 2.1 AA</strong>, building toward <strong>WCAG 2.2</strong> as it becomes the EU baseline. We reference the work of the <strong>XR Access Initiative</strong> and the wider field because knowing the space is what makes "we operationalized it at scale" credible.
+    </div>
+    <p style="color:var(--paper-3);font-size:var(--f-cap);font-family:'IBM Plex Mono';margin-top:1rem">// conformance wording pending EU accessibility counsel review before go-live</p>
+    <div class="btnrow" style="margin-top:1.6rem">
+      <a class="btn btn--gold" href="#/contact">Get the accessibility spec sheet ${ic('arrow')}</a>
+      <a class="btn btn--ghost" href="#/contact">Book a demo</a>
+    </div>
+  </div>
+</section>
+${closingCTA()}
+`;
+};
+PAGES.developers = function(){
+  return `
+<section class="band hero" style="padding-bottom:2rem">
+  <div class="hero-glow"></div>
+  <div class="wrap">
+    ${eyebrowThread("AgoraXR SDK")}
+    <h1 style="max-width:20ch">Build XR that's deployment-ready and inclusive from line one.</h1>
+    <p class="lede" style="margin-top:1.2rem;max-width:66ch;font-size:var(--f-lg)">A Unity toolkit for multiplayer, colocated, device-agnostic XR — with one-line integration of the full Attune accessibility &amp; comfort layer. Runs on a local network or online. Anything you build on it is ready to deploy at scale and inclusive by default, and the SDK grows alongside the platform.</p>
+    <div class="btnrow" style="margin-top:1.6rem">
+      <a class="btn btn--primary btn--lg" href="#/contact">Read the docs ${ic('arrow')}</a>
+      <a class="btn btn--ghost btn--lg" href="#/contact">Get the SDK</a>
+    </div>
+  </div>
+</section>
+<section class="band band--lime band--tight">
+  <div class="wrap split split--wide-left">
+    <div>
+      ${eyebrowThread("One line, nine categories")}
+      <h2>Stop rebuilding accessibility per app.</h2>
+      <p class="lede" style="margin-top:1rem">Add the full comfort &amp; access layer with a single call. Attune handles the nine categories; you ship the experience.</p>
+    </div>
+    <div class="code" aria-label="SDK usage example"><span class="c">// AgoraXR SDK — Unity</span>
+<span class="kw">using</span> AgoraXR;
+<span class="kw">using</span> AgoraXR.Attune;
+
+<span class="kw">void</span> <span class="fn">OnSessionStart</span>(User user) {
+  Session.<span class="fn">Colocate</span>();          <span class="c">// shared physical + virtual space</span>
+  Attune.<span class="fn">Apply</span>(user.profile); <span class="c">// comfort & access, configured</span>
+  Analytics.<span class="fn">Stream</span>(AgoraCommand);
+}</div>
+  </div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("What's in the SDK")}<h2>The toolkit.</h2></div>
+    <div class="grid g3">
+      <div class="card"><div class="c-ic">${ic('people')}</div><h4>Multiplayer colocation</h4><p>Multiple users, shared physical space, shared virtual world.</p></div>
+      <div class="card"><div class="c-ic">${ic('control')}</div><h4>State machine &amp; sequencer</h4><p>Structure complex, branching experiences and guided sequences.</p></div>
+      <div class="card"><div class="c-ic">${ic('optimize')}</div><h4>Analytics</h4><p>Instrument what users do and feed it back to the operations hub.</p></div>
+      <div class="card gold"><div class="c-ic">${ic('attune')}</div><h4>Attune integration</h4><p>Add the full accessibility &amp; comfort layer in one line, instead of rebuilding accessibility per app.</p></div>
+      <div class="card"><div class="c-ic">${ic('cube')}</div><h4>Creator tools</h4><p>The utilities that make building for deployment faster.</p></div>
+      <div class="card"><div class="c-ic">${ic('headset')}</div><h4>Device-agnostic runtime</h4><p>Local network or online, no lock-in to one headset.</p></div>
+    </div>
+  </div>
+</section>
+<section class="band band--ink2">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Why build on AgoraXR")}<h2>Three reasons, from a developer's side.</h2></div>
+    <ul class="checklist" style="max-width:70ch">
+      <li>${ic('check')}<span>Accessibility stops being a per-app burden — <strong>Attune handles nine categories for you.</strong></span></li>
+      <li>${ic('check')}<span>Your content is <strong>deployment-ready</strong> for institutional operators from day one.</span></li>
+      <li>${ic('check')}<span><strong>Local-or-online, device-agnostic</strong> runtime means one build reaches more places.</span></li>
+    </ul>
+    <div class="legalnote" style="margin-top:1.6rem">
+      ${ic('book')} Fluent in the field: we link to the <strong>W3C XAUR</strong>, the <strong>XR Access Initiative</strong>, and <strong>XR Association</strong> developer resources — because building accessible XR well means knowing the standards.
+    </div>
+    <div class="btnrow" style="margin-top:1.6rem">
+      <a class="btn btn--primary" href="#/contact">Read the docs ${ic('arrow')}</a>
+      <a class="btn btn--ghost" href="#/contact">Get the SDK</a>
+    </div>
+  </div>
+</section>
+${closingCTA()}
+`;
+};
+
+PAGES.trust = function(){
+  return `
+<section class="band hero" style="padding-bottom:2rem">
+  <div class="hero-glow"></div>
+  <div class="wrap">
+    ${eyebrowThread("Trust")}
+    <h1 style="max-width:20ch">Built to be trusted — with data, with compliance, with every visitor.</h1>
+    <p class="lede" style="margin-top:1.2rem;max-width:64ch;font-size:var(--f-lg)">EU-based and EU-hosted. Designed for the accessibility duties institutions already carry, and for where EU rules are clearly heading.</p>
+  </div>
+</section>
+<section class="band band--tight">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("See it running")}<h2>The fastest way to understand AgoraXR is to watch it work.</h2><p class="lede" style="margin-top:1rem">Live control, real content, and Attune configuring headsets on the fly.</p></div>
+    <div class="ph ph--video" role="img" aria-label="Placeholder for the full demo video">
+      <div class="ph-play">${ic('play')}</div>
+      <span class="ph-t">Full demo video</span>
+      <span class="ph-d">Captions on by default; transcript provided. Replace with your film.</span>
+      <span class="ph-cc">CC &middot; ON</span>
+    </div>
+  </div>
+</section>
+<section class="band band--lime">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Proof, by sector")}<h2>Case studies.</h2></div>
+    <div class="grid g3">
+      <div class="ph" role="img" aria-label="Placeholder for a reference deployment"><span class="ph-t">Reference deployment</span><span class="ph-d">One per priority sector. Real evidence only.</span></div>
+      <div class="ph" role="img" aria-label="Placeholder for a pilot case study"><span class="ph-t">Pilot case study</span><span class="ph-d">Real evidence only.</span></div>
+      <div class="ph" role="img" aria-label="Placeholder for a reference deployment"><span class="ph-t">Reference deployment</span><span class="ph-d">Real evidence only.</span></div>
+    </div>
+  </div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Accessibility")}<h2>Ahead of where accessibility is heading.</h2></div>
+    <div style="max-width:74ch">
+      <p class="lede">Accessibility isn't a feature we bolted on — it's the product. Attune is built around the <strong>W3C XR Accessibility User Requirements (XAUR)</strong>, the recognized benchmark for accessible XR, and aligned to <strong>EN 301 549</strong> and <strong>WCAG 2.1 AA</strong>, the standards that define digital accessibility in Europe today. As <strong>WCAG 2.2</strong> becomes the EU baseline, we're building toward it. And as the EU moves to formalize immersive accessibility — the draft <strong>WCAG 3.0</strong> now brings virtual and augmented reality into scope for the first time — AgoraXR is built for that direction of travel.</p>
+      <p class="lede">Public institutions already carry accessibility duties under the <strong>Web Accessibility Directive</strong>, national law, and public-procurement rules. Where XR is wrapped in a covered service — ticketing, e-commerce, a companion app — those parts fall in scope of the <strong>European Accessibility Act</strong>. AgoraXR is designed for the duties you already have, and for the ones clearly coming.</p>
+    </div>
+    <div class="legalnote" style="margin-top:1.4rem">
+      <strong style="color:inherit">The honest framing.</strong> Device makers solve accessibility one headset, one app at a time. AgoraXR is the layer that configures accessibility and comfort <em>per user, across shared headsets, managed by the operator, at deployment scale</em> — turning it from a per-app developer burden into part of how you run the space.
+    </div>
+    <p style="color:var(--paper-3);font-size:var(--f-cap);font-family:'IBM Plex Mono';margin-top:1rem">// conformance claimed only where independently verified; all marked wording pending EU accessibility counsel review before go-live</p>
+    <div style="margin-top:2rem;padding-top:1.6rem;border-top:1px solid var(--line)">
+      <h3 style="font-size:var(--f-h4)">Found a barrier? Tell us.</h3>
+      <p class="lede" style="margin-top:.5rem">We want AgoraXR to work for everyone. If something doesn't, let us know and we'll fix it.</p>
+      <div class="btnrow" style="margin-top:1rem"><a class="btn btn--primary" href="#/contact">Report an accessibility barrier ${ic('arrow')}</a></div>
+    </div>
+  </div>
+</section>
+<section class="band band--ink2">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Compliance & standards")}<h2>Trust signals.</h2></div>
+    <div class="badges">
+      <div class="badge"><div class="b-t">${ic('check')}EN 301 549 / WCAG 2.1 AA</div><p>The European digital-accessibility baseline; building toward WCAG 2.2.</p></div>
+      <div class="badge"><div class="b-t">${ic('attune')}W3C XAUR</div><p>The XR-specific accessibility user requirements Attune is designed around.</p></div>
+      <div class="badge"><div class="b-t">${ic('lock')}GDPR</div><p>EU data protection, by design.</p></div>
+      <div class="badge"><div class="b-t">${ic('eu')}EU-based &amp; EU-hosted</div><p>Infrastructure and hosting inside the EU.</p></div>
+      <div class="badge"><div class="b-t">${ic('shield')}EU Accessibility Act</div><p>Referenced as regulatory direction, not a current XR mandate.</p></div>
+    </div>
+    <div class="legalnote" style="margin-top:1.4rem">
+      ${ic('spark')} <strong style="color:inherit">AI features.</strong> Attune Horizon's real-time AI scene description and any other AI features are assistive and human-overseen. Where EU AI Act obligations apply, we follow documented human oversight and quality controls. Scope to be confirmed by counsel before launch.
+    </div>
+  </div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Security & data handling")}<h2>Your data, where you decide.</h2></div>
+    <div class="split">
+      <div>
+        <p class="lede">Comfort and access profiles, and operational data, can live on the user's device, your local server, or our EU servers — your choice. For enterprise, nothing leaves or enters your environment without your permission, with full visibility if it does. Everything is built and hosted under EU rules.</p>
+      </div>
+      <ul class="checklist">
+        <li>${ic('check')}<span><strong>Three storage options:</strong> on-device &middot; your local server &middot; AgoraXR EU servers.</span></li>
+        <li>${ic('check')}<span><strong>Enterprise control:</strong> approval required for anything in or out, with an auditable trail.</span></li>
+        <li>${ic('check')}<span><strong>Offline by design:</strong> runs with no connection at all when you need it to.</span></li>
+        <li>${ic('check')}<span><strong>EU throughout:</strong> built and hosted in the EU; GDPR by design.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+${closingCTA()}
+`;
+};
+
+PAGES.about = function(){
+  return `
+<section class="band hero" style="padding-bottom:2rem">
+  <div class="hero-glow"></div><div class="hero-glow g2"></div>
+  <div class="wrap">
+    ${eyebrowThread("About AgoraXR")}
+    <h1 style="max-width:20ch">The system for running XR at scale — for everyone.</h1>
+    <p class="lede" style="margin-top:1.2rem;max-width:70ch;font-size:var(--f-lg)">AgoraXR is an EU-based XR infrastructure and services company. We make institutional spaces XR-ready and give them one system — Agora Command, our operations hub — to deploy, run, optimize, and scale immersive content, with the throughput to make XR pay off.</p>
+  </div>
+</section>
+<section class="band band--lime">
+  <div class="wrap split">
+    <div>
+      ${eyebrowThread("What we do")}
+      <h2>One partner, from space to scale.</h2>
+      <p class="lede" style="margin-top:1rem">Attune, our accessibility &amp; comfort layer, measures each user and auto-configures every headset, so experiences stay comfortable for newcomers and accessible to people with disabilities, at scale and under EU rules. Beyond the platform, we create and source content through our creator network, supply hardware, and offer consultancy and workshops.</p>
+      <p class="lede">For developers, the AgoraXR SDK makes content multiplayer, colocated, device-agnostic, and inclusive by default.</p>
+    </div>
+    <div class="grid" style="gap:.8rem">
+      <div class="badge"><div class="b-t">${ic('control')}Run</div><p>Agora Command — deploy, control, and optimize your fleet.</p></div>
+      <div class="badge"><div class="b-t">${ic('attune')}Include</div><p>Attune — comfort and access for every visitor.</p></div>
+      <div class="badge"><div class="b-t">${ic('eu')}Under EU rules</div><p>EU-based, EU-hosted, GDPR by design.</p></div>
+    </div>
+  </div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">${eyebrowThread("Our values")}<h2>What we believe.</h2></div>
+    <div class="grid g3">
+      <div class="card"><div class="c-ic">${ic('people')}</div><h4>Everyone in the square</h4><p>The agora was the space where the whole community gathered. XR should include every visitor by design — not as an afterthought.</p></div>
+      <div class="card"><div class="c-ic">${ic('optimize')}</div><h4>Outcomes over hype</h4><p>We describe what the buyer cares about — more people served, more people included — and let specifics carry the weight.</p></div>
+      <div class="card"><div class="c-ic">${ic('lock')}</div><h4>Yours, and it stays yours</h4><p>Data sovereignty by default. You decide where profiles and operational data live.</p></div>
+    </div>
+    <div class="ph ph--wide" style="margin-top:1.8rem" role="img" aria-label="Placeholder for a team photo or the AgoraXR studio">
+      <span class="ph-t">Team / studio photo</span>
+      <span class="ph-d">Add a real photo of the team, a deployment, or your space.</span>
+    </div>
+  </div>
+</section>
+${closingCTA()}
+`;
+};
+
+PAGES.contact = function(){
+  var sectorOpts = SECTORS.map(function(s){ return '<option>'+s.nav+'</option>'; }).join('');
+  return `
+<section class="band hero" style="padding-bottom:2rem">
+  <div class="hero-glow"></div>
+  <div class="wrap">
+    ${eyebrowThread("Book a demo")}
+    <h1 style="max-width:18ch">See AgoraXR running, live.</h1>
+    <p class="lede" style="margin-top:1.2rem;max-width:60ch;font-size:var(--f-lg)">Tell us a little about your space and we'll show you AgoraXR running real content, live control, and Attune configuring headsets on the fly.</p>
+  </div>
+</section>
+<section class="band band--tight">
+  <div class="wrap" style="display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:start">
+    <div class="formcard">
+      <h3 style="font-size:var(--f-h3)">Book a demo</h3>
+      <p style="color:var(--paper-2);font-size:var(--f-sm);margin:.5rem 0 1.4rem">We'll be in touch within one business day.</p>
+      <form data-form="demo" novalidate>
+        <div class="field"><label for="d-name">Name <span class="req">*</span></label><input class="input" id="d-name" name="name" required><span class="err">This one's needed so we can reach you.</span></div>
+        <div class="field"><label for="d-org">Organization <span class="req">*</span></label><input class="input" id="d-org" name="org" required><span class="err">This one's needed so we can reach you.</span></div>
+        <div class="field"><label for="d-sector">Sector</label><select class="selectf" id="d-sector" name="sector"><option value="">Choose a sector…</option>${sectorOpts}</select></div>
+        <div class="field"><label for="d-goal">What you're hoping to do</label><textarea class="textarea" id="d-goal" name="goal" placeholder="A first pilot, a permanent install, a specific use case…"></textarea></div>
+        <div class="field"><label for="d-email">Email <span class="req">*</span></label><input class="input" id="d-email" name="email" type="email" required><span class="err">Add a valid email so we can reach you.</span></div>
+        <button class="btn btn--primary btn--lg" type="submit" style="width:100%;justify-content:center">Request my demo ${ic('arrow')}</button>
+        <p class="form-success" data-success="demo" style="margin-top:1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Thanks — we'll be in touch within one business day to set it up.</p>
+      </form>
+    </div>
+    <div>
+      <div class="formcard" style="margin-bottom:1.4rem">
+        <h3 style="font-size:var(--f-h4)">Found a barrier? Tell us.</h3>
+        <p style="color:var(--paper-2);font-size:var(--f-sm);margin:.5rem 0 1.2rem">We want AgoraXR to work for everyone. If something doesn't, let us know and we'll fix it.</p>
+        <form data-form="barrier" novalidate>
+          <div class="field"><label for="b-name">Name (optional)</label><input class="input" id="b-name" name="name"></div>
+          <div class="field"><label for="b-contact">How to reach you <span class="req">*</span></label><input class="input" id="b-contact" name="contact" required><span class="err">Add a way for us to reach you.</span></div>
+          <div class="field"><label for="b-where">Page or experience</label><input class="input" id="b-where" name="where" placeholder="Where did you hit the barrier?"></div>
+          <div class="field"><label for="b-desc">Description <span class="req">*</span></label><textarea class="textarea" id="b-desc" name="desc" required></textarea><span class="err">Tell us what happened so we can fix it.</span></div>
+          <button class="btn btn--ghost" type="submit" style="width:100%;justify-content:center">Send report</button>
+          <p class="form-success" data-success="barrier" style="margin-top:1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Thanks — we'll look into it and follow up.</p>
+        </form>
+      </div>
+      <div class="formcard">
+        <h3 style="font-size:var(--f-h4)">XR at scale, minus the hype.</h3>
+        <p style="color:var(--paper-2);font-size:var(--f-sm);margin:.5rem 0 1.2rem">Occasional updates on what we're shipping and what we're learning about running XR in the real world.</p>
+        <form data-form="newsletter2" novalidate>
+          <div class="field"><label for="n2-email">Your email <span class="req">*</span></label><input class="input" id="n2-email" name="email" type="email" required><span class="err">Add a valid email.</span></div>
+          <div class="consent" style="margin-bottom:1rem"><input type="checkbox" id="n2-consent"><label for="n2-consent" style="font-weight:400;margin:0;color:var(--paper-3)">We'll only email you about AgoraXR, and you can leave anytime.</label></div>
+          <button class="btn btn--gold" type="submit" style="width:100%;justify-content:center">Keep me posted</button>
+          <p class="form-success" data-success="newsletter2" style="margin-top:1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Thanks — you're on the list.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+};
+
+var STUBS = {
+  careers:["Careers","We're building the team that runs XR at scale — for everyone.","Roles will be listed here. In the meantime, tell us how you'd like to contribute."],
+  privacy:["Privacy","Built and hosted under EU rules, GDPR by design.","Your full privacy policy lives here. Populate with your verified, counsel-reviewed policy before launch."],
+  terms:["Terms","The terms of using AgoraXR.","Your terms of service live here. Populate with counsel-reviewed wording before launch."],
+  cookies:["Cookie settings","We use only what we need to run this site.","Your granular cookie controls live here, wired to a consent manager before launch."],
+  gdpr:["Data & GDPR","EU data protection, by design.","Details of data processing, storage options, and your rights live here — counsel-reviewed before launch."]
+};
+PAGES.stub = function(key){
+  var s = STUBS[key];
+  if(!s) return PAGES.notfound();
+  return `
+<section class="band hero"><div class="hero-glow"></div><div class="wrap">
+  ${eyebrowThread(s[0])}
+  <h1 style="max-width:18ch">${s[0]}</h1>
+  <p class="lede" style="margin-top:1.2rem;max-width:60ch;font-size:var(--f-lg)">${s[1]}</p>
+</div></section>
+<section class="band band--tight"><div class="wrap">
+  <div class="ph ph--wide" role="img" aria-label="Placeholder for ${s[0]} content"><span class="ph-t">${s[0]} — content</span><span class="ph-d">${s[2]}</span></div>
+  <div class="btnrow" style="margin-top:1.6rem"><a class="btn btn--primary" href="#/contact">Contact us ${ic('arrow')}</a><a class="btn btn--ghost" href="#/">Back home</a></div>
+</div></section>
+`;
+};
+
+PAGES.notfound = function(){
+  return `
+<section class="band hero" style="min-height:52vh;display:flex;align-items:center"><div class="hero-glow"></div><div class="wrap">
+  ${eyebrowThread("404")}
+  <h1 style="max-width:16ch">This page wandered off.</h1>
+  <p class="lede" style="margin-top:1.2rem;max-width:52ch;font-size:var(--f-lg)">Try the sectors, the platform, or head home.</p>
+  <div class="btnrow" style="margin-top:1.6rem">
+    <a class="btn btn--primary" href="#/">Head home ${ic('arrow')}</a>
+    <a class="btn btn--ghost" href="#/platform">Explore the platform</a>
+  </div>
+</div></section>
+`;
+};
+/* ---------- router ---------- */
+var TITLES = { home:"AgoraXR — Run XR at scale, for everyone", platform:"Platform — AgoraXR", developers:"Developers — AgoraXR SDK",
+  trust:"Trust — AgoraXR", about:"About — AgoraXR", contact:"Book a demo — AgoraXR", notfound:"Not found — AgoraXR" };
+
+function parseHash(){
+  var h = location.hash.replace(/^#/, '');
+  if(!h || h==='/' ) return {name:'home'};
+  var parts = h.split('/').filter(Boolean); // ['sectors','museums']
+  if(parts[0]==='sectors' && parts[1]) return {name:'sector', slug:parts[1]};
+  if(parts[0]==='platform' && parts[1]) return {name:'platformItem', slug:parts[1]};
+  if(parts[0]==='platform') return {name:'platform'};
+  if(parts[0]==='developers') return {name:'developers'};
+  if(parts[0]==='trust') return {name:'trust'};
+  if(parts[0]==='about') return {name:'about'};
+  if(parts[0]==='contact') return {name:'contact'};
+  if(parts[0]==='page' && parts[1]) return {name:'stub', key:parts[1]};
+  return {name:'notfound'};
+}
+
+function render(){
+  closeAllMenus(); closeMobile();
+  var r = parseHash(); var html, title;
+  switch(r.name){
+    case 'sector': html = PAGES.sector(r.slug); var sc=SECTORS.filter(function(x){return x.slug===r.slug;})[0]; title = sc?(sc.nav+" — AgoraXR"):TITLES.notfound; break;
+    case 'platform': html = PAGES.platform(); title = TITLES.platform; break;
+    case 'platformItem': html = PAGES.platformItem(r.slug); var pc=PLATFORM.filter(function(x){return x.slug===r.slug;})[0]; title = pc?(pc.nav+" — AgoraXR"):TITLES.notfound; break;
+    case 'developers': html = PAGES.developers(); title = TITLES.developers; break;
+    case 'trust': html = PAGES.trust(); title = TITLES.trust; break;
+    case 'about': html = PAGES.about(); title = TITLES.about; break;
+    case 'contact': html = PAGES.contact(); title = TITLES.contact; break;
+    case 'stub': html = PAGES.stub(r.key); title = (STUBS[r.key]?STUBS[r.key][0]:'') + " — AgoraXR"; break;
+    case 'notfound': html = PAGES.notfound(); title = TITLES.notfound; break;
+    default: html = PAGES.home(); title = TITLES.home;
+  }
+  var app = document.getElementById('app');
+  app.innerHTML = html;
+  document.title = title;
+  setActiveNav(r);
+  window.scrollTo(0,0);
+  app.focus({preventScroll:true});
+  observeReveals();
+  document.dispatchEvent(new CustomEvent('route:rendered', {detail:r}));
+}
+
+function setActiveNav(r){
+  $$('.nav-link').forEach(function(a){ a.classList.remove('active'); });
+  $$('.nav-link').forEach(function(a){
+    var href = a.getAttribute('href')||'';
+    if(r.name==='developers' && href==='#/developers') a.classList.add('active');
+    if(r.name==='trust' && href==='#/trust') a.classList.add('active');
+    if(r.name==='about' && href==='#/about') a.classList.add('active');
+  });
+}
+
+/* ---------- desktop dropdown menus ---------- */
+function closeAllMenus(){
+  $$('.nav-item .nav-link[aria-haspopup]').forEach(function(btn){ btn.setAttribute('aria-expanded','false'); });
+  $$('.dropdown').forEach(function(d){ d.setAttribute('data-open','false'); });
+}
+function openMenu(item){
+  closeAllMenus();
+  var btn = item.querySelector('.nav-link[aria-haspopup]'); var dd = item.querySelector('.dropdown');
+  if(btn) btn.setAttribute('aria-expanded','true'); if(dd) dd.setAttribute('data-open','true');
+}
+function initMenus(){
+  $$('.nav-item[data-menu]').forEach(function(item){
+    var btn = item.querySelector('.nav-link[aria-haspopup]');
+    item.addEventListener('mouseenter', function(){ openMenu(item); });
+    item.addEventListener('mouseleave', function(){ closeAllMenus(); });
+    if(btn){ btn.addEventListener('click', function(e){ e.preventDefault(); var open = btn.getAttribute('aria-expanded')==='true'; if(open) closeAllMenus(); else openMenu(item); }); }
+    item.addEventListener('focusout', function(e){ if(!item.contains(e.relatedTarget)) closeAllMenus(); });
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeAllMenus(); closeMobile(); } });
+  document.addEventListener('click', function(e){ if(!e.target.closest('.nav-item')) closeAllMenus(); });
+}
+
+/* ---------- mobile nav ---------- */
+function closeMobile(){ var m=document.getElementById('mobileNav'), b=document.getElementById('burger'); if(m) m.setAttribute('data-open','false'); if(b) b.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+function initMobile(){
+  var b=document.getElementById('burger'), m=document.getElementById('mobileNav');
+  b.addEventListener('click', function(){ var open=m.getAttribute('data-open')==='true'; if(open){ closeMobile(); } else { m.setAttribute('data-open','true'); b.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; } });
+  m.addEventListener('click', function(e){ if(e.target.closest('a')) closeMobile(); });
+}
+
+/* ---------- Attune interactive ---------- */
+function applyFx(el, fx, target){
+  if(!el) return;
+  if(fx==='scale'){ el.style.setProperty('--ui-scale', target.value); }
+  else if(fx==='bright'){ el.style.setProperty('--scene-bright', target.value); }
+  else if(fx==='cb'){ el.setAttribute('data-cb', target.value); }
+  else { el.classList.toggle(fx, target.checked); } // cap, hc, vig, ref
+}
+document.addEventListener('input', function(e){ var t=e.target; if(t && t.getAttribute && t.getAttribute('data-scene')){ applyFx(document.getElementById(t.getAttribute('data-scene')), t.getAttribute('data-fx'), t); } });
+document.addEventListener('change', function(e){ var t=e.target; if(t && t.getAttribute && t.getAttribute('data-scene')){ applyFx(document.getElementById(t.getAttribute('data-scene')), t.getAttribute('data-fx'), t); } });
+
+/* ---------- forms (front-end only; wire to your backend) ---------- */
+function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+document.addEventListener('submit', function(e){
+  var form = e.target.closest('form[data-form]'); if(!form) return;
+  e.preventDefault();
+  var ok = true;
+  $$('.field', form).forEach(function(f){ f.classList.remove('invalid'); });
+  $$('[required]', form).forEach(function(inp){
+    var bad = !inp.value.trim() || (inp.type==='email' && !isEmail(inp.value));
+    if(bad){ ok=false; var field=inp.closest('.field'); if(field) field.classList.add('invalid'); }
+  });
+  // footer newsletter has no .field wrapper
+  var loneEmail = form.querySelector('input[type=email][required]');
+  if(loneEmail && !loneEmail.closest('.field')){ if(!isEmail(loneEmail.value)){ ok=false; loneEmail.style.borderColor='#e08a3a'; } else { loneEmail.style.borderColor=''; } }
+  if(!ok){ var firstBad = form.querySelector('.field.invalid input, .field.invalid textarea, input[type=email][required]'); if(firstBad) firstBad.focus(); return; }
+  var key = form.getAttribute('data-form');
+  var success = document.querySelector('[data-success="'+key+'"]');
+  if(success){ success.classList.add('show'); }
+  form.reset();
+  $$('.field', form).forEach(function(f){ f.classList.remove('invalid'); });
+});
+
+/* ---------- scroll reveal ---------- */
+var revObserver;
+function observeReveals(){
+  if(!('IntersectionObserver' in window)){ $$('.reveal').forEach(function(el){ el.classList.add('in'); }); return; }
+  if(!revObserver){ revObserver = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); revObserver.unobserve(en.target); } }); }, {rootMargin:'0px 0px -8% 0px', threshold:0.05}); }
+  $$('.reveal:not(.in)').forEach(function(el){ revObserver.observe(el); });
+}
+
+/* ---------- chrome: header, back-to-top, cookie ---------- */
+function initChrome(){
+  var header=document.getElementById('siteheader'), totop=document.getElementById('totop');
+  window.addEventListener('scroll', function(){
+    var y = window.scrollY || window.pageYOffset;
+    header.classList.toggle('scrolled', y>10);
+    totop.setAttribute('data-show', y>600 ? 'true':'false');
+  }, {passive:true});
+  totop.addEventListener('click', function(){ window.scrollTo({top:0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth'}); });
+  var cookie=document.getElementById('cookie'), dismissed=false;
+  setTimeout(function(){ if(!dismissed) cookie.setAttribute('data-show','true'); }, 1200);
+  document.getElementById('cookieAccept').addEventListener('click', function(){ dismissed=true; cookie.setAttribute('data-show','false'); });
+  document.getElementById('cookieManage').addEventListener('click', function(){ dismissed=true; cookie.setAttribute('data-show','false'); location.hash='#/page/cookies'; });
+}
+
+/* ---------- theme toggle ---------- */
+function initTheme(){
+  var btn = document.getElementById('themeToggle'); if(!btn) return;
+  btn.addEventListener('click', function(){
+    var d = document.documentElement;
+    var next = d.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    d.setAttribute('data-theme', next);
+    try{ localStorage.setItem('axr-theme', next); }catch(e){}
+    var meta = document.querySelector('meta[name="theme-color"]:not([media])') || document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute('content', next === 'light' ? '#FBFAFE' : '#0A0A0F');
+  });
+}
+
+/* ---------- init ---------- */
+document.getElementById('year').textContent = new Date().getFullYear();
+initTheme();
+buildNav();
+initMenus();
+initMobile();
+initChrome();
+window.addEventListener('hashchange', render);
+render();
+</script>
+
+<!-- ================= Attune 3D scene (Three.js, self-hosted, lazy-loaded) ================= -->
+<script>
+"use strict";
+/* Renders a brand-tinted "digital Aegean" colonnade behind the Try Attune demo.
+   Three tiers: animated 3D · static 3D · CSS fallback. Three.js is imported only
+   when a scene scrolls near the viewport, so other pages pay nothing. */
+/* Bare path over file:// (query strings can break local-file loads); versioned over http(s) for cache-busting. */
+const THREE_URL = './vendor/three/three.min.js' + (location.protocol === 'file:' ? '' : '?v=r160');
+let threePromise = null;
+/* Classic (non-module) loader so the demo also works when index.html is opened
+   directly via file:// — ES-module dynamic import() is blocked on that origin. */
+function loadThree(){
+  if(window.THREE) return Promise.resolve(window.THREE);
+  if(threePromise) return threePromise;
+  threePromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = THREE_URL; s.async = true;
+    s.onload = () => window.THREE ? resolve(window.THREE) : reject(new Error('THREE global missing'));
+    s.onerror = () => reject(new Error('failed to load ' + THREE_URL));
+    document.head.appendChild(s);
+  });
+  return threePromise;
+}
+
+const mq = (q) => window.matchMedia && window.matchMedia(q).matches;
+const reduceMotion = mq('(prefers-reduced-motion: reduce)');
+const saveData = navigator.connection && navigator.connection.saveData;
+const mem = navigator.deviceMemory || 8;
+const cpu = navigator.hardwareConcurrency || 8;
+
+function webglOK(){
+  try{ const c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl'))); }
+  catch(e){ return false; }
+}
+function tier(){
+  if(!webglOK() || saveData) return 'off';        // keep CSS fallback
+  if(reduceMotion || mem <= 3 || cpu <= 3) return 'static';
+  return 'anim';
+}
+
+function makeSky(THREE){
+  const c = document.createElement('canvas'); c.width = 8; c.height = 256;
+  const g = c.getContext('2d').createLinearGradient(0,0,0,256);
+  g.addColorStop(0.00,'#241653');   // deep violet zenith
+  g.addColorStop(0.45,'#6d4ef2');   // electric violet
+  g.addColorStop(0.72,'#c98fb8');   // warm haze
+  g.addColorStop(1.00,'#e9cfa6');   // golden horizon
+  const ctx = c.getContext('2d'); ctx.fillStyle = g; ctx.fillRect(0,0,8,256);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function build(THREE, el, canvas, mode){
+  const animated = mode === 'anim';
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false, powerPreference:'high-performance' });
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  const scene = new THREE.Scene();
+  scene.background = makeSky(THREE);
+  scene.fog = new THREE.Fog(0xb79bd6, 12, 44);
+
+  const camera = new THREE.PerspectiveCamera(55, 1.6, 0.1, 120);
+  camera.position.set(0, 1.6, 8);
+
+  scene.add(new THREE.HemisphereLight(0xdce8ff, 0x3a2a55, 1.1));
+  const key = new THREE.DirectionalLight(0xffd9a8, 1.5); key.position.set(-6, 9, 3); scene.add(key);
+  const rim = new THREE.DirectionalLight(0x6ad0ff, 0.55); rim.position.set(7, 3, -7); scene.add(rim);
+
+  const stone = new THREE.MeshStandardMaterial({ color:0xEDE6D6, roughness:0.72, metalness:0.04 });
+  const disposables = [];
+
+  // Floor + grid
+  const groundGeo = new THREE.PlaneGeometry(120,120);
+  const groundMat = new THREE.MeshStandardMaterial({ color:0x171326, roughness:0.4, metalness:0.25 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI/2; scene.add(ground);
+  const grid = new THREE.GridHelper(120, 60, 0x7c5cff, 0x2a2740);
+  grid.material.transparent = true; grid.material.opacity = 0.16; grid.position.y = 0.002; scene.add(grid);
+  disposables.push(groundGeo, groundMat, grid.geometry, grid.material);
+
+  // Instanced colonnade (two receding rows) — shaft + capital + base
+  const rows = 9, count = rows * 2;
+  const shaftGeo = new THREE.CylinderGeometry(0.32, 0.38, 4.4, 18, 1);
+  const capGeo   = new THREE.BoxGeometry(0.98, 0.34, 0.98);
+  const baseGeo  = new THREE.BoxGeometry(0.98, 0.4, 0.98);
+  const shafts = new THREE.InstancedMesh(shaftGeo, stone, count);
+  const caps   = new THREE.InstancedMesh(capGeo, stone, count);
+  const bases  = new THREE.InstancedMesh(baseGeo, stone, count);
+  [shafts, caps, bases].forEach(m => { m.frustumCulled = false; });
+  const M = new THREE.Matrix4(); let i = 0;
+  for(let r=0;r<rows;r++){
+    for(let s=-1;s<=1;s+=2){
+      const x = s*3.2, z = -r*3.6 - 1;
+      M.makeTranslation(x, 2.2, z); shafts.setMatrixAt(i, M);
+      M.makeTranslation(x, 4.55, z); caps.setMatrixAt(i, M);
+      M.makeTranslation(x, 0.2, z);  bases.setMatrixAt(i, M);
+      i++;
+    }
+  }
+  shafts.instanceMatrix.needsUpdate = caps.instanceMatrix.needsUpdate = bases.instanceMatrix.needsUpdate = true;
+  scene.add(shafts, caps, bases);
+  disposables.push(shaftGeo, capGeo, baseGeo, stone);
+
+  // Floating dust motes
+  const pcount = animated ? 240 : 90;
+  const pgeo = new THREE.BufferGeometry();
+  const parr = new Float32Array(pcount*3);
+  for(let p=0;p<pcount;p++){ parr[p*3]=(Math.random()-0.5)*18; parr[p*3+1]=Math.random()*6+0.4; parr[p*3+2]=-Math.random()*32; }
+  pgeo.setAttribute('position', new THREE.BufferAttribute(parr,3));
+  const pmat = new THREE.PointsMaterial({ color:0xfff1d8, size:0.06, transparent:true, opacity:0.5, depthWrite:false });
+  const motes = new THREE.Points(pgeo, pmat); scene.add(motes);
+  disposables.push(pgeo, pmat);
+
+  function resize(){
+    const w = el.clientWidth || 640, h = el.clientHeight || 400;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, animated ? 2 : 1.5));
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+  }
+  resize();
+  const ro = ('ResizeObserver' in window) ? new ResizeObserver(resize) : null;
+  if(ro) ro.observe(el);
+
+  const clock = new THREE.Clock();
+  let t = 0, raf = 0, running = false;
+  const pointer = { x:0, y:0 };
+  function onMove(e){ const b = el.getBoundingClientRect(); pointer.x = (e.clientX-b.left)/b.width - 0.5; pointer.y = (e.clientY-b.top)/b.height - 0.5; }
+  if(animated) el.addEventListener('pointermove', onMove, { passive:true });
+
+  function draw(){
+    const steady = el.classList.contains('ref');   // "Static reference point" toggle → vestibular comfort
+    const pa = pgeo.attributes.position.array;
+    const dt = clock.getDelta(); t += dt;
+    for(let k=0;k<pcount;k++){ pa[k*3+1] += dt*0.16; if(pa[k*3+1] > 6.8){ pa[k*3+1] = 0.4; } }
+    pgeo.attributes.position.needsUpdate = true;
+    const sx = steady ? 0 : Math.sin(t*0.25)*0.3 + pointer.x*0.5;
+    const sy = steady ? 0 : Math.cos(t*0.2)*0.14 - pointer.y*0.3;
+    camera.position.x += (sx - camera.position.x) * 0.05;
+    camera.position.y += ((1.6 + sy) - camera.position.y) * 0.05;
+    camera.lookAt(0, 1.5, -8);
+    renderer.render(scene, camera);
+  }
+  function loop(){ raf = requestAnimationFrame(loop); draw(); }
+  function start(){ if(running || !animated) return; running = true; clock.start(); loop(); }
+  function stop(){ running = false; cancelAnimationFrame(raf); }
+
+  // First paint, then reveal over the CSS fallback (synchronous — not gated on rAF,
+  // which can be starved in throttled/background tabs). The CSS transition still animates it.
+  camera.lookAt(0, 1.5, -8);
+  renderer.render(scene, camera);
+  el.classList.remove('loading3d');
+  el.classList.add('is3d');
+
+  // Only animate while visible and the tab is active
+  const visIO = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if(en.isIntersecting && !document.hidden) start(); else stop(); });
+  }, { threshold: 0.04 });
+  visIO.observe(el);
+  const onVis = () => { if(document.hidden) stop(); else start(); };
+  document.addEventListener('visibilitychange', onVis);
+
+  return {
+    el,
+    dispose(){
+      stop();
+      visIO.disconnect();
+      if(ro) ro.disconnect();
+      document.removeEventListener('visibilitychange', onVis);
+      if(animated) el.removeEventListener('pointermove', onMove);
+      disposables.forEach(d => { try{ d.dispose(); }catch(e){} });
+      if(scene.background && scene.background.dispose) scene.background.dispose();
+      renderer.dispose();
+      const gl = renderer.getContext && renderer.getContext();
+      const lose = gl && gl.getExtension && gl.getExtension('WEBGL_lose_context');
+      if(lose) lose.loseContext();
+    }
+  };
+}
+
+let instance = null, pendingIO = null, pendingScroll = null;
+function unmount(){
+  if(instance){ instance.dispose(); instance = null; }
+  if(pendingIO){ pendingIO.disconnect(); pendingIO = null; }
+  if(pendingScroll){ window.removeEventListener('scroll', pendingScroll); pendingScroll = null; }
+}
+
+function mount(el){
+  const canvas = el.querySelector('.ad-canvas'); if(!canvas) return;
+  if(tier() === 'off') return;                     // graceful CSS fallback
+  el.classList.add('loading3d');
+  loadThree().then((mod) => {
+    if(!document.body.contains(el)) return;         // navigated away mid-load
+    try { instance = build(mod, el, canvas, tier()); }
+    catch(err){ el.classList.remove('loading3d'); console.warn('Attune 3D init failed:', err); }
+  }).catch((err) => { el.classList.remove('loading3d'); console.warn('Three.js failed to load:', err); });
+}
+
+function nearViewport(el){
+  const r = el.getBoundingClientRect();
+  const vh = window.innerHeight || document.documentElement.clientHeight || 800;
+  return r.height > 0 && r.top < vh + 250 && r.bottom > -250;
+}
+function wire(){
+  unmount();
+  const el = document.querySelector('.ad-scene[data-3d]');
+  if(!el) return;
+  if(nearViewport(el)){ mount(el); return; }          // already on-screen (Attune/Sector pages)
+  if('IntersectionObserver' in window){                // below the fold (Home): load on approach
+    pendingIO = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if(en.isIntersecting){ pendingIO.disconnect(); pendingIO = null; mount(el); } });
+    }, { rootMargin: '250px' });
+    pendingIO.observe(el);
+    // Safety net if the observer never fires (some throttled/embedded contexts)
+    pendingScroll = () => { if(nearViewport(el)){ mount(el); if(pendingIO){ pendingIO.disconnect(); pendingIO = null; } if(pendingScroll){ window.removeEventListener('scroll', pendingScroll); pendingScroll = null; } } };
+    window.addEventListener('scroll', pendingScroll, { passive:true });
+  } else {
+    mount(el);
+  }
+}
+
+document.addEventListener('route:rendered', wire);
+if(document.querySelector('.ad-scene[data-3d]')) wire();   // initial load (router already ran)
+</script>
+</body>
+</html>
